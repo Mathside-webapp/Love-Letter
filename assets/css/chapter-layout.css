@@ -1,9 +1,8 @@
 /* Give each illustrated chapter room to unfold. Reserve real document space
    for chapter endings so the curves cannot cover captions or controls. */
 .hero{
- height:140svh;
- min-height:1000px;
- max-height:1600px;
+ height:180svh;
+ min-height:1600px;
 }
 .hero-content{transform:translateY(-12%)}
 .hero-bottom{bottom:180px}
@@ -17,8 +16,12 @@
 .surprises-section,.letters-section{padding-top:120px;padding-bottom:0}
 .surprises-section .gifts-grid,.letters-section .letters-grid{margin-top:80px}
 .surprises-section .unwrapped-caption,.letters-section .letters-bottom-note{margin-top:64px;margin-bottom:0}
-.final-section{padding-top:160px;padding-bottom:160px}
-.final-section .letter-display{margin-top:64px;margin-bottom:64px}
+.story-section,.surprises-section,.letters-section{
+ min-height:max(1600px,180svh);
+ display:flex;flex-direction:column;justify-content:space-between;
+}
+.reasons-section{min-height:max(1600px,180svh)}
+.story-section>.seamless-edge,.surprises-section>.seamless-edge,.letters-section>.seamless-edge{flex-shrink:0}
 
 .story-section>.seamless-edge,
 .reasons-section>.seamless-edge,
@@ -38,17 +41,16 @@
 .letters-glow{background:radial-gradient(ellipse at 50% 50%,#fff7ef9e,transparent 65%)}
 
 @media(max-width:700px){
- .hero{height:125svh;min-height:900px;max-height:none}
+ .hero{height:170svh;min-height:1400px}
  .hero-bottom{bottom:128px}
  .hero .seamless-edge{height:96px}
  .story-section,.surprises-section,.letters-section{padding-top:64px;padding-bottom:0}
  .story-section .story-roadmap{padding-top:56px}
  .story-section .story-footer{margin-top:72px}
- .reasons-section{min-height:900px;padding-top:64px;padding-bottom:0}
+ .story-section,.reasons-section,.surprises-section,.letters-section{min-height:max(1400px,170svh)}
+ .reasons-section{display:flex;flex-direction:column;justify-content:space-between;padding-top:64px;padding-bottom:0}
  .surprises-section .gifts-grid,.letters-section .letters-grid{margin-top:48px}
  .surprises-section .unwrapped-caption,.letters-section .letters-bottom-note{margin-top:48px;margin-bottom:0}
- .final-section{padding-top:96px;padding-bottom:96px}
- .final-section .letter-display{margin-top:48px;margin-bottom:48px}
  .story-section>.seamless-edge,.reasons-section>.seamless-edge,
  .surprises-section>.seamless-edge,.letters-section>.seamless-edge{
   height:96px;margin-top:64px;
