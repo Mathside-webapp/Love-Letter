@@ -45,6 +45,9 @@
  content:none!important;
 }
 .reasons-scenery{-webkit-mask-image:none;mask-image:none}
+/* Restore the illustrated ending on every chapter. The SVG itself paints only
+   the area below its curved path, so there is no rectangular transition band. */
+.seamless-edge{display:block!important}
 .story-section{padding-bottom:82px}
 .reasons-section{padding-bottom:78px}
 .surprises-section{padding-bottom:76px}
