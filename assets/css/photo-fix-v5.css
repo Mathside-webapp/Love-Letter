@@ -49,19 +49,24 @@
    the area below its curved path, so there is no rectangular transition band. */
 .seamless-edge{display:block!important}
 .story-section{padding-bottom:82px}
-.reasons-section{padding-bottom:78px}
-.surprises-section{padding-bottom:76px}
-.letters-section{padding-bottom:76px}
+.reasons-section{padding-bottom:147px}
+.surprises-section{padding-bottom:187px}
+.letters-section{padding-bottom:187px}
+/* The glow must fade in after the solid-color SVG joins this section. */
+.letters-glow{
+ -webkit-mask-image:linear-gradient(to bottom,transparent,#000 160px);
+ mask-image:linear-gradient(to bottom,transparent,#000 160px);
+}
 @media(max-width:700px){
  .story-section{padding-bottom:56px}
- .reasons-section{padding-bottom:55px}
- .surprises-section{padding-bottom:55px}
- .letters-section{padding-bottom:55px}
+ .reasons-section{padding-bottom:97px}
+ .surprises-section{padding-bottom:137px}
+ .letters-section{padding-bottom:137px}
 }
 
 /* A roomier story chapter, with the original photo-and-copy composition. */
 .story-section .content-width{width:min(1320px,calc(100% - 64px))}
-.story-section{padding-top:56px;padding-bottom:104px}
+.story-section{padding-top:56px;padding-bottom:147px}
 .story-banner{gap:48px;min-height:430px}
 .story-banner .image-title img{width:min(480px,100%)}
 .story-banner .section-description{max-width:440px;font-size:17px}
@@ -90,7 +95,7 @@
 }
 @media(max-width:700px){
  .story-section .content-width{width:calc(100% - 40px)}
- .story-section{padding-top:32px;padding-bottom:64px}
+ .story-section{padding-top:32px;padding-bottom:97px}
  .story-section .story-banner{grid-template-columns:minmax(0,1fr);gap:16px}
  .story-banner .chapter-copy{text-align:center}
  .story-banner .eyebrow{text-align:center}
