@@ -1,0 +1,11 @@
+{
+  "authoringTool": "Blender 4.3.2",
+  "source": "tools/blender/build_terrace_props.py",
+  "origin": "Original models authored for this project; no third-party model inputs",
+  "units": "metres",
+  "format": "glTF 2.0 binary, Y up",
+  "models": [
+    {"file": "terrace-fern.glb", "triangles": 80160, "materialPrimitives": 9, "bytes": 2299860, "sha256": "cbd8435191367003c9aa1255fd00075461ff93e5c61644fa57770f3c73598fed"},
+    {"file": "terrace-lantern.glb", "triangles": 4532, "materialPrimitives": 5, "bytes": 247836, "sha256": "2f08de46a4b64984346b64de7f96583dc84f957ac873a4c5a26c3701912df448"}
+  ]
+}

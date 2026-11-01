@@ -22,8 +22,8 @@
   <link rel="stylesheet" href="assets/css/photo-fix-v5.css?v=curves-spacing-3">
   <link rel="stylesheet" href="assets/css/chapter-layout.css?v=3-compact-balanced">
   <link rel="stylesheet" href="assets/css/scrapbook.css?v=1">
-  <link rel="stylesheet" href="assets/css/terrace.css?v=1">
-  <script type="module" src="assets/js/terrace.js?v=1"></script>
+  <link rel="stylesheet" href="assets/css/terrace.css?v=2-details">
+  <script type="module" src="assets/js/terrace.js?v=2-details"></script>
   <script src="assets/js/config.js" defer></script>
   <script src="assets/js/app.js" defer></script>
 </head>
@@ -63,13 +63,20 @@
       <div id="terrace" class="terrace" aria-label="Interactive moonlit terrace"></div>
       <div class="terrace-tools" hidden>
         <p id="terraceStatus" aria-live="polite">A place for just the two of us.</p>
-        <div class="terrace-views" role="group" aria-label="Choose a 3D view">
+        <nav class="terrace-chapters" aria-label="Explore chapters from the terrace">
+          <a href="#story">Our stories</a>
+          <a href="#reasons">Reasons</a>
+          <a href="#surprises">Surprises</a>
+          <a href="#letters">Letters</a>
+          <a href="#forever">For you</a>
+        </nav>
+        <div class="terrace-views" role="group" aria-label="Choose a 3D camera view">
           <button type="button" data-view="0" aria-pressed="true">The terrace</button>
-          <button type="button" data-view="1" aria-pressed="false">Our memories</button>
-          <button type="button" data-view="2" aria-pressed="false">Your letter</button>
+          <button type="button" data-view="1" aria-pressed="false">Gallery view</button>
+          <button type="button" data-view="2" aria-pressed="false">Writing table</button>
           <button type="button" data-view="3" aria-pressed="false">From above</button>
         </div>
-        <p class="terrace-hint">Drag to look around · Choose a view to explore</p>
+        <p class="terrace-hint">Drag to look around · Select a framed story, star, gift, envelope, or letter</p>
         <button type="button" id="terraceLetter" hidden>Open your letter ↗</button>
       </div>
       <picture class="hero-image">

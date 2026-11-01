@@ -1,4 +1,5 @@
 import * as THREE from '../vendor/three/three.module.min.js';
+import { GLTFLoader } from '../vendor/three/loaders/GLTFLoader.js';
 
 // A real, locally served WebGL scene. Existing HTML remains the fallback.
 const host = document.querySelector('#terrace');
@@ -16,7 +17,7 @@ function initialize() {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.25;
+  renderer.toneMappingExposure = 1.1;
   host.append(renderer.domElement);
   renderer.domElement.setAttribute('aria-hidden','true');
   const scene = new THREE.Scene();
@@ -31,8 +32,12 @@ function initialize() {
   }
   const box=(w,h,d,m,x,y,z,parent)=>mesh(new THREE.BoxGeometry(w,h,d),m,x,y,z,parent);
   const cylinder=(r,h,m,x,y,z,parent)=>mesh(new THREE.CylinderGeometry(r,r,h,32),m,x,y,z,parent);
-  scene.add(new THREE.HemisphereLight('#b7cbff','#64503d',1.25));
+  scene.add(new THREE.HemisphereLight('#b7cbff','#64503d',.9));
   const moonlight=new THREE.DirectionalLight('#c2d4ff',3);moonlight.position.set(-9,14,-6);scene.add(moonlight);
+  moonlight.castShadow=true;moonlight.shadow.mapSize.set(2048,2048);
+  Object.assign(moonlight.shadow.camera,{left:-11,right:11,top:11,bottom:-11,near:.5,far:45});
+  moonlight.shadow.bias=-.0003;moonlight.shadow.normalBias=.025;
+  moonlight.shadow.radius=3;
   const warm=new THREE.SpotLight('#ffd59c',110,30,Math.PI/3,.6,1.5);warm.position.set(2,7,3);warm.target.position.set(0,0,0);warm.castShadow=true;warm.shadow.mapSize.set(1024,1024);warm.shadow.bias=-.0002;scene.add(warm,warm.target);
   // Subtle material grain catches the light without a texture download.
   function grain(base,woodgrain=false){
@@ -42,12 +47,26 @@ function initialize() {
     for(let i=0;i<16000;i++){context.fillStyle=`rgba(${random()>.5?'255,255,255':'30,20,10'},${random()*.09})`;context.fillRect(random()*256,random()*256,woodgrain?25:1,1)}
     const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;return texture;
   }
-  wood.map=grain('#b39173',true);linen.map=grain('#eee1d0');
+  // Long wood fibres, knots and uneven pores instead of a flat brown surface.
+  const woodCanvas=document.createElement('canvas');woodCanvas.width=woodCanvas.height=512;
+  const wc=woodCanvas.getContext('2d');const pixels=wc.createImageData(512,512);
+  for(let y=0;y<512;y++)for(let x=0;x<512;x++){
+    const knot=Math.sin(y*.013)*7+Math.sin(y*.037)*2;
+    const fibre=Math.sin((x+knot)*1.8)*5+Math.sin((x+knot)*.19)*9;
+    const noise=Math.sin(x*127.1+y*311.7)*3;const i=(y*512+x)*4;
+    pixels.data[i]=126+fibre+noise;pixels.data[i+1]=86+fibre*.7+noise;pixels.data[i+2]=57+fibre*.5;pixels.data[i+3]=255;
+  }
+  wc.putImageData(pixels,0,0);
+  wood.map=new THREE.CanvasTexture(woodCanvas);wood.map.colorSpace=THREE.SRGBColorSpace;
+  wood.color.set('#ffffff');wood.bumpMap=wood.map;wood.bumpScale=.025;wood.roughness=.76;
+  linen.map=grain('#eee1d0');linen.bumpMap=linen.map;linen.bumpScale=.018;
+  const stoneTexture=grain('#d2c1ad');
 
   // Limestone terrace with individually jointed slabs.
   box(14,.4,10,stone,0,-.25,0);
   for(let x=-6;x<=6;x+=2)for(let z=-4;z<=4;z+=2){
     const slab=mat(new THREE.Color('#c0b09c').offsetHSL(0,0,((x+z+12)%5)*.008));
+    slab.map=stoneTexture;slab.bumpMap=stoneTexture;slab.bumpScale=.035;slab.roughness=.92;
     box(1.98,.035,1.98,slab,x,-.025,z);
   }
   box(14,.15,.22,brass,0,1.65,-4.8);
@@ -72,14 +91,29 @@ function initialize() {
   for(let i=0;i<40;i++)box(4.9,.004,.018,mat(i%2?'#a69484':'#78675e'),1,.032,-1.5+i*.08);
   cylinder(1.35,.16,wood,1,1.05,0);
   for(const x of [.2,1.8])for(const z of [-.65,.65])box(.09,1,.09,brass,x,.5,z);
-  const letter=box(.88,.016,.64,mat('#fff2d9'),.9,1.15,.15);letter.rotation.y=-.15;
-  // Ink lines on the actual paper surface.
-  for(let i=0;i<7;i++)box(.58-i%3*.05,.003,.007,mat('#8f6d60'),.9,1.161,-.04+i*.055);
-  const seal=cylinder(.09,.022,rose,1.15,1.17,.32);seal.rotation.y=.2;
+  const clickable=[];
+  function chapter(object,panel){object.userData.panel=panel;clickable.push(object);return object}
+  // The same floral paper and personal words as the final letter panel.
+  const paperMaterial=new THREE.MeshStandardMaterial({color:'#ffffff',transparent:true,alphaTest:.08,roughness:.92,side:THREE.DoubleSide});
+  const letter=chapter(mesh(new THREE.PlaneGeometry(.95,1.02),paperMaterial,.95,1.134,.2),'forever');letter.rotation.x=-Math.PI/2;
+  const paperImage=new Image();paperImage.src='assets/images/sprites/letter-card.webp';
+  paperImage.onload=()=>{
+    const canvas=document.createElement('canvas');canvas.width=768;canvas.height=820;
+    const ctx=canvas.getContext('2d');ctx.drawImage(paperImage,56,0,paperImage.width-56,paperImage.height,0,0,768,820);
+    const data=window.LOVE_SITE_DATA||{};ctx.textAlign='center';ctx.fillStyle='#87576b';
+    ctx.font='italic 40px Georgia';ctx.fillText((data.finalLetter?.[0]||'My dearest Babi,').slice(0,45),384,320,560);
+    ctx.font='italic 25px Georgia';const words=(data.finalLetter?.[1]||'Every little moment with you means the world to me.').split(/\s+/);
+    let line='',row=0;for(const word of words){const next=line+word+' ';if(ctx.measureText(next).width>510&&line){ctx.fillText(line.trim(),384,390+row*38);row++;line='';if(row===3)break}line+=word+' '}
+    if(row<3)ctx.fillText(line.trim(),384,390+row*38);
+    ctx.font='italic 31px Georgia';ctx.fillText('Always yours ♡',384,565);
+    const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());paperMaterial.map=texture;paperMaterial.needsUpdate=true;requestRender();
+  };
   const pen=box(.025,.025,.7,brass,1.6,1.15,.1);pen.rotation.y=-.35;
   // Lanterns have glass, metal frames, wax and warm emissive flames.
-  for(const [x,z] of [[-.3,-.35],[5,-1],[-5,-3]]){
-    const y=x===-.3?1.15:0;
+  const fallbackProps=new THREE.Group();world.add(fallbackProps);
+  const originalChildren=new Set(world.children);
+  for(const [x,z] of [[.25,-.55],[5,-1],[-5,-3]]){
+    const y=x===.25?1.13:0;
     box(.35,.04,.35,brass,x,y+.02,z);
     for(const dx of [-.16,.16])for(const dz of [-.16,.16])box(.025,.6,.025,brass,x+dx,y+.32,z+dz);
     box(.38,.06,.38,brass,x,y+.64,z);
@@ -87,15 +121,25 @@ function initialize() {
     const flame=mesh(new THREE.SphereGeometry(.055,12,8),new THREE.MeshBasicMaterial({color:'#ffe4a6'}),x,y+.4,z);flame.scale.y=2;
     const light=new THREE.PointLight('#ffb966',3,4,2);light.position.set(x,y+.5,z);scene.add(light);
   }
-  // Potted foliage, with leaves built as shaded volumes rather than billboards.
-  for(const [x,z] of [[-5.6,-3.6],[5.6,-3.6],[5.6,3.4]]){
-    cylinder(.42,.7,mat('#a17762'),x,.35,z);
-    for(let i=0;i<15;i++){
-      const a=i*2.4, y=.85+(i%5)*.22;
-      const leaf=mesh(new THREE.SphereGeometry(.3,12,8),mat(i%2?'#667f60':'#8b9b71'),x+Math.sin(a)*.4,y,z+Math.cos(a)*.4);
-      leaf.scale.set(.45,1.5,.7);leaf.rotation.z=Math.sin(a)*.65;
-    }
+  for(const child of [...world.children])if(!originalChildren.has(child))fallbackProps.add(child);
+  const assets=new GLTFLoader();let modelsLoaded=0;
+  function prepareModel(root){root.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;const materials=Array.isArray(o.material)?o.material:[o.material];for(const m of materials){if(m.name.includes('Leaf')){m.side=THREE.DoubleSide;m.roughness=.75}if(m.name.includes('terracotta')){m.map=grain('#caa98c');m.bumpMap=m.map;m.bumpScale=.025}if(m.name.includes('glass')){m.depthWrite=false;o.castShadow=false}}})}
+  assets.load('assets/models/terrace-fern.glb',gltf=>{prepareModel(gltf.scene);for(const [x,z] of [[-5.6,-3.6],[5.6,-3.6],[5.6,3.4]]){const plant=gltf.scene.clone();plant.position.set(x,0,z);world.add(plant)}host.dataset.models=String(++modelsLoaded);requestRender()},undefined,()=>console.warn('Plant model could not load.'));
+  assets.load('assets/models/terrace-lantern.glb',gltf=>{prepareModel(gltf.scene);for(const [x,y,z] of [[.25,1.13,-.55],[5,0,-1],[-5,0,-3]]){const lantern=gltf.scene.clone();lantern.position.set(x,y,z);world.add(lantern)}fallbackProps.visible=false;host.dataset.models=String(++modelsLoaded);requestRender()},undefined,()=>console.warn('Using simplified lanterns.'));
+  // Gifts and letters have physical places on a side console.
+  box(2.5,.10,.85,wood,-3,1.05,-3.9);
+  for(const x of [-4,-2])for(const z of [-4.2,-3.6])box(.07,1.05,.07,brass,x,.52,z);
+  for(let i=0;i<3;i++){
+    const x=-3.8+i*.65, h=.30+i%2*.12;
+    const gift=chapter(box(.46,h,.44,mat(['#9e6577','#c0a074','#897392'][i]),x,1.10+h/2,-3.9),'surprises');
+    chapter(box(.49,.045,.47,linen,x,1.10+h,-3.9),'surprises');
+    chapter(box(.07,h+.06,.455,brass,x,1.10+h/2,-3.9),'surprises');
+    for(const sign of [-1,1]){const bow=mesh(new THREE.TorusGeometry(.08,.012,6,20),brass,x+sign*.07,1.15+h,-3.9);bow.rotation.x=Math.PI/2;bow.scale.y=.6;chapter(bow,'surprises')}
   }
+  const envelopeTexture=new THREE.TextureLoader().load('assets/images/sprites/letter-sealed.webp',()=>requestRender());envelopeTexture.colorSpace=THREE.SRGBColorSpace;
+  const envelopes=chapter(mesh(new THREE.PlaneGeometry(.85,.52),new THREE.MeshStandardMaterial({map:envelopeTexture,transparent:true,alphaTest:.1,side:THREE.DoubleSide,roughness:.9}),2.1,.98,-2.5),'letters');envelopes.rotation.x=-Math.PI/2;
+  const starShape=new THREE.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.07:.16;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?starShape.lineTo(x,y):starShape.moveTo(x,y)}starShape.closePath();
+  for(let i=0;i<5;i++){const x=1.3+i*.8,y=2.6+Math.sin(i)*.15;chapter(mesh(new THREE.ExtrudeGeometry(starShape,{depth:.035,bevelEnabled:true,bevelSize:.008,bevelThickness:.008,bevelSegments:2}),brass,x,y,-3.9),'reasons');box(.008,4.8-y,.008,brass,x,(4.8+y)/2,-3.9)}
   // Framed memories stand on a gallery wall inside the terrace.
   box(.18,3.6,6,mat('#a99380'),-6,1.8,0);
   const loader=new THREE.TextureLoader();
@@ -105,22 +149,27 @@ function initialize() {
     box(.12,1.65,1.5,brass,-5.86,2.25,z);
     box(.14,1.5,1.35,linen,-5.79,2.25,z);
     const tex=loader.load(`assets/images/backgrounds/${name}`,()=>requestRender());tex.colorSpace=THREE.SRGBColorSpace;
-    const photo=mesh(new THREE.PlaneGeometry(1.16,1.3),new THREE.MeshStandardMaterial({map:tex,roughness:.55}),-5.70,2.25,z);
+    const photo=chapter(mesh(new THREE.PlaneGeometry(1.16,1.3),new THREE.MeshStandardMaterial({map:tex,roughness:.55}),-5.70,2.25,z),'story');
     photo.rotation.y=Math.PI/2;
   });
   // Distant mountains and a moon establish depth beyond the balcony.
-  for(let i=0;i<16;i++){
-    const peak=mesh(new THREE.SphereGeometry(1,24,16),mat(i%2?'#303b50':'#273449'),-48+i*6,-5,-24-(i%3)*5);
-    peak.scale.set(8+(i%3),7+(i%4)*2,5);peak.rotation.z=Math.sin(i)*.2;
+  const hills=new THREE.PlaneGeometry(150,70,120,56);
+  const hp=hills.attributes.position;
+  for(let i=0;i<hp.count;i++){
+    const x=hp.getX(i),z=hp.getY(i),ramp=THREE.MathUtils.smoothstep(z,-35,-10);
+    const ridge=5+3*Math.sin(x*.12+z*.08)+2*Math.sin(x*.31-z*.19)+.8*Math.sin(x*.87+z*.43);
+    hp.setZ(i,Math.max(0,ridge)*ramp);
   }
+  hills.computeVertexNormals();
+  const landscape=mesh(hills,mat('#29374a'),0,-3,-55);landscape.rotation.x=-Math.PI/2;landscape.castShadow=false;
   mesh(new THREE.SphereGeometry(1.6,32,24),new THREE.MeshBasicMaterial({color:'#f3dfba'}),-7,12,-35);
   const starPositions=[];for(let i=0;i<260;i++){const a=i*2.399;starPositions.push(Math.sin(a)*55,8+(i%39),-20-Math.cos(a)*20)}
   const stars=new THREE.BufferGeometry();stars.setAttribute('position',new THREE.Float32BufferAttribute(starPositions,3));scene.add(new THREE.Points(stars,new THREE.PointsMaterial({color:'#ffe7c0',size:.055})));
 
   const views=[
     {p:[10,7,12],t:[0,1,0],label:'A place for just the two of us.'},
-    {p:[.3,3.3,5],t:[-5.7,2.2,-.1],label:'Every memory deserves a place.'},
-    {p:[3.5,4.3,4.4],t:[.8,1.1,0],label:'Some words are only for you.'},
+    {p:[.3,3.3,5],t:[-5.7,2.2,-.1],label:'Our stories — select a framed photo to read them.'},
+    {p:[2.2,3.1,2.5],t:[.95,1.14,.15],label:'A letter, just for you.'},
     {p:[12,16,15],t:[0,0,0],label:'Our own little corner of the world.'}
   ];
   let view=0, dragging=false, previousX=0, yaw=0, frame=0, visible=true;
@@ -129,7 +178,13 @@ function initialize() {
   function choose(index){view=index;yaw=0;setDestination();document.querySelectorAll('[data-view]').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===view)));document.querySelector('#terraceStatus').textContent=views[view].label;document.querySelector('#terraceLetter').hidden=view!==2;document.querySelector('.hero-content').classList.toggle('scene-detail',view!==0);if(reduced.matches){camera.position.copy(destination);look.copy(target)}requestRender()}
   document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.view))));
   document.querySelector('#terraceLetter').addEventListener('click',()=>document.querySelector('#openFinalLetter').click());
-  renderer.domElement.addEventListener('pointerdown',e=>{dragging=true;previousX=e.clientX;renderer.domElement.setPointerCapture(e.pointerId)});
+  const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let startX=0,startY=0;
+  function pick(e){const r=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(pointer,camera);return raycaster.intersectObjects(clickable,false)[0]?.object.userData.panel}
+  function openChapter(panel){const section=document.getElementById(panel);if(!section)return;location.hash=panel;section.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});section.setAttribute('tabindex','-1');section.focus({preventScroll:true})}
+  document.querySelectorAll('.terrace-chapters a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();openChapter(a.hash.slice(1))}));
+  renderer.domElement.addEventListener('pointerdown',e=>{dragging=true;previousX=startX=e.clientX;startY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)});
+  renderer.domElement.addEventListener('pointerup',e=>{if(Math.hypot(e.clientX-startX,e.clientY-startY)<6){const panel=pick(e);if(panel)openChapter(panel)}});
+  renderer.domElement.addEventListener('pointermove',e=>{if(dragging)return;const panel=pick(e);renderer.domElement.style.cursor=panel?'pointer':'grab';document.querySelectorAll('.terrace-chapters a').forEach(a=>a.classList.toggle('scene-hover',a.hash==='#'+panel))});
   renderer.domElement.addEventListener('pointermove',e=>{if(!dragging)return;yaw=THREE.MathUtils.clamp(yaw+(e.clientX-previousX)*.004,-.7,.7);previousX=e.clientX;setDestination();requestRender()});
   for(const event of ['pointerup','pointercancel'])renderer.domElement.addEventListener(event,()=>dragging=false);
   function resize(){const {width,height}=host.getBoundingClientRect();renderer.setSize(width,height);camera.aspect=width/height;camera.updateProjectionMatrix();setDestination();requestRender()}

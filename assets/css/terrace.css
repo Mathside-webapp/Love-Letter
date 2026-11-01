@@ -1,4 +1,5 @@
 .terrace{position:absolute;inset:0;z-index:1}
+.terrace::after{content:"";position:absolute;inset:55% 0 0;pointer-events:none;background:linear-gradient(transparent,#12131be6)}
 .terrace canvas{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab}
 .terrace canvas:active{cursor:grabbing}
 .terrace-ready .hero{height:100svh;min-height:760px;max-height:1100px;background:#191c2b}
@@ -13,6 +14,11 @@
 .terrace-tools[hidden]{display:none}
 #terraceStatus{font:italic 24px/1.4 var(--serif);margin:0 0 20px;text-shadow:0 2px 8px #000}
 .terrace-views{display:flex;gap:8px;flex-wrap:wrap}
+.terrace-chapters{display:flex;gap:12px 24px;flex-wrap:wrap;margin-bottom:18px}
+.terrace-chapters a{color:#fff0d8;text-decoration:none;border-bottom:1px solid #d5c2a3aa;padding:8px 0;font:15px var(--serif);text-shadow:0 2px 5px #000}
+.terrace-chapters a:hover{color:white;border-bottom-color:white}
+.terrace-chapters a:focus-visible{outline:3px solid white;outline-offset:4px}
+.terrace-chapters a.scene-hover{color:#ffdc8e;border-bottom-color:#ffdc8e}
 .terrace-views button,#terraceLetter{border:1px solid #d5c2a375;color:#f8edde;background:#191922e8;padding:13px 20px;border-radius:2px;font:12px var(--sans);cursor:pointer}
 .terrace-views button[aria-pressed=true]{background:#e6ceaa;color:#302721;border-color:#e6ceaa}
 .terrace-views button:focus-visible,#terraceLetter:focus-visible{outline:3px solid white;outline-offset:4px}
@@ -28,6 +34,8 @@
  .terrace-ready .hero-subtitle{font-size:14px;margin:12px 0}
  .terrace-ready .hero-actions{flex-direction:row;margin-top:20px}
  .terrace-tools{left:6%;right:6%;bottom:24px}
+ .terrace-chapters{gap:8px 16px;margin-bottom:12px}
+ .terrace-chapters a{font-size:14px}
  .terrace-views{display:grid;grid-template-columns:1fr 1fr}
  .terrace-views button{padding:12px 8px}
  #terraceStatus{font-size:20px}
