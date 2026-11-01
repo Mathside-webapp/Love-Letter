@@ -22,6 +22,8 @@
   <link rel="stylesheet" href="assets/css/photo-fix-v5.css?v=curves-spacing-3">
   <link rel="stylesheet" href="assets/css/chapter-layout.css?v=3-compact-balanced">
   <link rel="stylesheet" href="assets/css/scrapbook.css?v=1">
+  <link rel="stylesheet" href="assets/css/terrace.css?v=1">
+  <script type="module" src="assets/js/terrace.js?v=1"></script>
   <script src="assets/js/config.js" defer></script>
   <script src="assets/js/app.js" defer></script>
 </head>
@@ -58,6 +60,18 @@
 
   <main id="main">
     <section class="hero chapter" id="home" aria-labelledby="heroHeading">
+      <div id="terrace" class="terrace" aria-label="Interactive moonlit terrace"></div>
+      <div class="terrace-tools" hidden>
+        <p id="terraceStatus" aria-live="polite">A place for just the two of us.</p>
+        <div class="terrace-views" role="group" aria-label="Choose a 3D view">
+          <button type="button" data-view="0" aria-pressed="true">The terrace</button>
+          <button type="button" data-view="1" aria-pressed="false">Our memories</button>
+          <button type="button" data-view="2" aria-pressed="false">Your letter</button>
+          <button type="button" data-view="3" aria-pressed="false">From above</button>
+        </div>
+        <p class="terrace-hint">Drag to look around · Choose a view to explore</p>
+        <button type="button" id="terraceLetter" hidden>Open your letter ↗</button>
+      </div>
       <picture class="hero-image">
         <source srcset="assets/images/backgrounds/hero-mobile.webp" type="image/webp" media="(max-width: 700px)">
         <img src="assets/images/backgrounds/hero-desktop.webp" alt="A magical moonlit balcony filled with cherry blossoms and a sleeping cat" width="1672" height="941" fetchpriority="high">

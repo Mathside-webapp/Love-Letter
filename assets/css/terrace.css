@@ -1,0 +1,36 @@
+.terrace{position:absolute;inset:0;z-index:1}
+.terrace canvas{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab}
+.terrace canvas:active{cursor:grabbing}
+.terrace-ready .hero{height:100svh;min-height:760px;max-height:1100px;background:#191c2b}
+.terrace-ready .hero-image,.terrace-ready .hero-overlay,.terrace-ready .hero-stars,.terrace-ready .moon-secret,.terrace-ready .hero-bottom,.terrace-ready .hero .seamless-edge{display:none!important}
+.terrace-ready .hero-content{position:absolute;left:6%;top:15%;width:38%;padding:0;transform:none;text-align:left;pointer-events:none}
+.terrace-ready .hero-content .hero-eyebrow,.terrace-ready .heart-divider{display:none}
+.terrace-ready .hero-heading img{width:100%;max-width:520px;margin:0;filter:drop-shadow(0 2px 10px #0008)!important}
+.terrace-ready .hero-subtitle{margin:20px 0;color:#fff2df;max-width:300px;font-size:17px}
+.terrace-ready .hero-actions{justify-content:flex-start;pointer-events:auto}
+.terrace-ready .hero-actions .text-button{display:none}
+.terrace-tools{position:absolute;z-index:5;bottom:32px;left:6%;right:6%;color:#f8edde;text-align:left}
+.terrace-tools[hidden]{display:none}
+#terraceStatus{font:italic 24px/1.4 var(--serif);margin:0 0 20px;text-shadow:0 2px 8px #000}
+.terrace-views{display:flex;gap:8px;flex-wrap:wrap}
+.terrace-views button,#terraceLetter{border:1px solid #d5c2a375;color:#f8edde;background:#191922e8;padding:13px 20px;border-radius:2px;font:12px var(--sans);cursor:pointer}
+.terrace-views button[aria-pressed=true]{background:#e6ceaa;color:#302721;border-color:#e6ceaa}
+.terrace-views button:focus-visible,#terraceLetter:focus-visible{outline:3px solid white;outline-offset:4px}
+.terrace-hint{font:11px var(--sans);color:#e8d9c5;margin:14px 0 0}
+#terraceLetter{position:absolute;right:0;bottom:27px;background:#e6ceaa;color:#302721}
+.terrace-ready .site-header{background:#191922d9;border-bottom-color:#dac09d26}
+.terrace-ready .hero-content.scene-detail{opacity:0;visibility:hidden}
+.terrace-ready .hero-content{transition:opacity .3s}
+@media(max-width:700px){
+ .terrace-ready .hero{min-height:780px;max-height:none}
+ .terrace-ready .hero-content{top:13%;left:7%;width:80%}
+ .terrace-ready .hero-heading img{max-width:350px}
+ .terrace-ready .hero-subtitle{font-size:14px;margin:12px 0}
+ .terrace-ready .hero-actions{flex-direction:row;margin-top:20px}
+ .terrace-tools{left:6%;right:6%;bottom:24px}
+ .terrace-views{display:grid;grid-template-columns:1fr 1fr}
+ .terrace-views button{padding:12px 8px}
+ #terraceStatus{font-size:20px}
+ #terraceLetter{position:static;margin-top:16px}
+}
+@media(prefers-reduced-motion:reduce){.terrace-ready .hero-content{transition:none}}
