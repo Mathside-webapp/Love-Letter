@@ -1,0 +1,45 @@
+/* Warm paper, restrained lighting, and physical depth. */
+:root{--paper:#f4e8d9;--paper-ink:#513d39}
+.story-section{background:linear-gradient(145deg,#f6dbe5,var(--paper) 28%,#ead8c8)}
+.surprises-section{background:linear-gradient(#f4d6e5,var(--paper) 24%,#ead8ca)}
+.letters-section{background:linear-gradient(#f7deec,var(--paper) 28%,#eee0d0)}
+.story-scene{opacity:.16}
+.letters-glow{display:none}
+.hero-overlay{background:linear-gradient(180deg,#1e14233b,#21182516 50%,#21182580)}
+.hero-image img{filter:saturate(.75)}
+.hero-heading img,.image-title img{filter:none!important}
+.hero-stars{opacity:.35}
+.petal-field{opacity:.35}
+.real-polaroid,.memory-card{
+ background:#fff9ee;
+ border-color:#fff9ee;
+ box-shadow:0 3px 5px #38251e26,0 18px 28px -12px #38251e70;
+ border-radius:2px;
+}
+.real-polaroid{animation:none;will-change:auto}
+.real-polaroid-window{box-shadow:none;border:0}
+.memory-card{backdrop-filter:none;transition:transform .35s ease,box-shadow .35s ease}
+.memory-card:hover{transform:translateY(-7px) rotate(0);box-shadow:0 22px 34px -14px #38251e80}
+.real-polaroid figcaption{font-size:20px;color:#79524a}
+.story-section .eyebrow,.surprises-section .eyebrow,.letters-section .eyebrow{color:#85685e}
+.chapter-title-centered .section-description,.illustrated-banner .section-description{color:var(--paper-ink)}
+.banner-handwriting,.letters-bottom-note,.unwrapped-caption{color:#956a60}
+.gift-card img,.letter-card img{filter:drop-shadow(3px 14px 9px #46302b40)!important}
+.letter-card{transition:transform .4s ease;transform-origin:center bottom}
+.letter-card:hover{transform:translateY(-8px) rotate(-3deg)}
+.letter-card:active{transform:translateY(-3px) rotate(0) scale(.97)}
+.primary-button{box-shadow:0 4px 10px #20121b35;background:#88576b;border:1px solid #eacdc4}
+.primary-button:hover{box-shadow:0 8px 16px #20121b45}
+.final-paper-art img{filter:drop-shadow(5px 16px 12px #110c1660)}
+.final-overlay{background:linear-gradient(#22122ad9,#291c34b0 55%,#22122af0)}
+.love-dialog{
+ background:var(--paper);color:var(--paper-ink);border:0;border-radius:3px;
+ box-shadow:0 24px 80px #100a1666;padding:56px 44px;
+}
+.love-dialog::backdrop{background:#17101db3;backdrop-filter:blur(5px)}
+.love-dialog[open]{animation:unfold-paper .5s ease-out both;transform-origin:center top}
+.love-dialog h2{color:#714952}
+.dialog-body{color:var(--paper-ink);line-height:1.9}
+@keyframes unfold-paper{from{opacity:0;transform:perspective(1000px) rotateX(-16deg) translateY(18px)}to{opacity:1;transform:perspective(1000px) rotateX(0) translateY(0)}}
+@media(max-width:700px){.love-dialog{padding:40px 24px}.real-polaroid figcaption{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.love-dialog[open]{animation:none}.letter-card,.memory-card{transition:none}}
