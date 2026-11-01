@@ -38,7 +38,7 @@
 /* Remove the floating, opaque wave slabs from V3/V4. The illustration is NOT
    stretched: its native image aspect ratio is retained by seamless-v4.css.
    Short, transparent color dissolves now join the adjacent chapters. */
-.seamless-edge{display:none!important}
+.seamless-edge{display:block}
 /* Keep chapter artwork clear of the pale transition overlays. */
 .hero::after,
 .reasons-section::before,.surprises-section::before,.final-section::before{
@@ -70,15 +70,16 @@
 .story-section .story-roadmap{padding-top:40px;gap:28px}
 .story-section .memory-photo{height:220px}
 
-/* Center the parchment and its invitation as one vertical composition. */
+/* Keep the paper beside the invitation; center writing on the visible paper.
+   The image has a transparent left margin of about 14% of its width. */
 .final-section .letter-display{
- grid-template-columns:minmax(0,1fr);max-width:640px;
- justify-items:center;gap:24px;text-align:center;padding:12px 24px;
+ grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);max-width:880px;
+ align-items:center;gap:24px;text-align:left;padding:12px 24px;
 }
 .final-paper-art{width:min(420px,100%);min-height:0;aspect-ratio:394 / 361}
 .final-paper-art img{width:100%;max-height:none;transform:none}
-.final-paper-preview{transform:none}
-.letter-display-content{width:100%;padding:0;text-align:center}
+.final-paper-preview{transform:none;inset:22% 10% 22% 24%}
+.letter-display-content{width:100%;padding:0;text-align:left}
 .letter-display-content p{max-width:46ch;margin-inline:auto}
 
 @media(max-width:850px){
@@ -100,7 +101,8 @@
  .real-polaroid-pair{width:min(390px,100%);height:300px}
  .story-section .story-roadmap{padding-top:32px;gap:36px 16px}
  .story-section .memory-photo{height:clamp(130px,30vw,200px)}
- .final-section .letter-display{padding:0 8px 20px;gap:20px}
+ .final-section .letter-display{grid-template-columns:minmax(0,1fr);max-width:420px;justify-items:center;padding:0 8px 20px;gap:20px}
+ .letter-display-content{text-align:center}
  .final-paper-art{height:auto;width:min(360px,100%)}
  .final-paper-art img{width:100%;max-height:none}
 }
