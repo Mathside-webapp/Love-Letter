@@ -39,23 +39,65 @@
    stretched: its native image aspect ratio is retained by seamless-v4.css.
    Short, transparent color dissolves now join the adjacent chapters. */
 .seamless-edge{display:none!important}
-.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:92px;z-index:1;
- pointer-events:none;background:linear-gradient(to bottom,transparent,#f6dbe5)}
-.reasons-section::before,.surprises-section::before,.final-section::before{content:""!important;
- position:absolute;left:0;right:0;top:0!important;bottom:auto!important;height:90px!important;
- background-image:none!important;pointer-events:none;z-index:2}
-.reasons-section::before{background:linear-gradient(to bottom,#f7dce5,transparent)!important}
-.surprises-section::before{background:linear-gradient(to bottom,#281734,transparent)!important}
-.final-section::before{background:linear-gradient(to bottom,#f2cada,transparent)!important}
+/* Keep chapter artwork clear of the pale transition overlays. */
+.hero::after,
+.reasons-section::before,.surprises-section::before,.final-section::before{
+ content:none!important;
+}
+.reasons-scenery{-webkit-mask-image:none;mask-image:none}
 .story-section{padding-bottom:82px}
 .reasons-section{padding-bottom:78px}
 .surprises-section{padding-bottom:76px}
 .letters-section{padding-bottom:76px}
 @media(max-width:700px){
- .hero::after{height:65px}
- .reasons-section::before,.surprises-section::before,.final-section::before{height:70px!important}
  .story-section{padding-bottom:56px}
  .reasons-section{padding-bottom:55px}
  .surprises-section{padding-bottom:55px}
  .letters-section{padding-bottom:55px}
+}
+
+/* A roomier story chapter, with the original photo-and-copy composition. */
+.story-section .content-width{width:min(1320px,calc(100% - 64px))}
+.story-section{padding-top:56px;padding-bottom:104px}
+.story-banner{gap:48px;min-height:430px}
+.story-banner .image-title img{width:min(480px,100%)}
+.story-banner .section-description{max-width:440px;font-size:17px}
+.story-art{min-height:420px}
+.real-polaroid-pair{width:min(560px,100%);height:420px}
+.story-section .story-roadmap{padding-top:40px;gap:28px}
+.story-section .memory-photo{height:220px}
+
+/* Center the parchment and its invitation as one vertical composition. */
+.final-section .letter-display{
+ grid-template-columns:minmax(0,1fr);max-width:640px;
+ justify-items:center;gap:24px;text-align:center;padding:12px 24px;
+}
+.final-paper-art{width:min(420px,100%);min-height:0;aspect-ratio:394 / 361}
+.final-paper-art img{width:100%;max-height:none;transform:none}
+.final-paper-preview{transform:none}
+.letter-display-content{width:100%;padding:0;text-align:center}
+.letter-display-content p{max-width:46ch;margin-inline:auto}
+
+@media(max-width:850px){
+ .story-banner{gap:24px;min-height:340px}
+ .story-art{min-height:320px}
+ .real-polaroid-pair{height:320px}
+ .story-section .story-roadmap{grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 24px}
+}
+@media(max-width:700px){
+ .story-section .content-width{width:calc(100% - 40px)}
+ .story-section{padding-top:32px;padding-bottom:64px}
+ .story-section .story-banner{grid-template-columns:minmax(0,1fr);gap:16px}
+ .story-banner .chapter-copy{text-align:center}
+ .story-banner .eyebrow{text-align:center}
+ .story-banner .image-title img{width:min(390px,100%);margin-inline:auto}
+ .story-banner .section-description{font-size:14px;margin:12px auto 0}
+ .story-banner .banner-handwriting{font-size:26px}
+ .story-art{min-height:300px}
+ .real-polaroid-pair{width:min(390px,100%);height:300px}
+ .story-section .story-roadmap{padding-top:32px;gap:36px 16px}
+ .story-section .memory-photo{height:clamp(130px,30vw,200px)}
+ .final-section .letter-display{padding:0 8px 20px;gap:20px}
+ .final-paper-art{height:auto;width:min(360px,100%)}
+ .final-paper-art img{width:100%;max-height:none}
 }
