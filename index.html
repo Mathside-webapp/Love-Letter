@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#24142f">
+  <meta name="description" content="A little world made with love — a dreamy interactive anniversary story.">
+  <meta property="og:title" content="To Babi, With Love">
+  <meta property="og:description" content="A little world I made, just for you.">
+  <title>To Babi, With Love ♡</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/decorations/outline-heart.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/images/backgrounds/hero-desktop.webp" media="(min-width: 701px)">
+  <link rel="preload" as="image" href="assets/images/backgrounds/hero-mobile.webp" media="(max-width: 700px)">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/animations.css">
+  <link rel="stylesheet" href="assets/css/personalized-features.css">
+  <link rel="stylesheet" href="assets/css/concept-matched.css">
+  <link rel="stylesheet" href="assets/css/seamless-v4.css">
+  <link rel="stylesheet" href="assets/css/photo-fix-v5.css">
+  <script src="assets/js/config.js" defer></script>
+  <script src="assets/js/app.js" defer></script>
+</head>
+<body class="intro-locked">
+  <a href="#main" class="skip-link">Skip to the love story</a>
+  <div class="site-progress" id="siteProgress" aria-hidden="true"></div>
+
+  <header class="site-header" id="siteHeader">
+    <a class="brand" href="#home" aria-label="Our Anniversary, back to top"><span class="brand-heart">♡</span><span>Our Anniversary</span></a>
+    <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+      <a href="#home">Home</a><a href="#story">Our Story</a><a href="#reasons">Reasons</a><a href="#surprises">Surprises</a><a href="#letters">Letters</a><a href="#forever">For You</a>
+    </nav>
+    <div class="nav-actions">
+      <button type="button" class="icon-button music-toggle" id="musicToggle" aria-label="Play gentle background music" aria-pressed="false" title="Play an original gentle melody"><span class="music-icon" aria-hidden="true">♫</span></button>
+      <button type="button" class="icon-button menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <div class="intro-screen" id="introScreen" role="dialog" aria-modal="true" aria-labelledby="introHeading">
+    <div class="intro-backdrop"></div>
+    <div class="intro-glimmer intro-glimmer--one"></div><div class="intro-glimmer intro-glimmer--two"></div>
+    <div class="intro-content">
+      <p class="eyebrow">A little surprise awaits</p>
+      <h2 class="intro-heading" id="introHeading">For someone very special...</h2>
+      <button type="button" class="intro-envelope-button" id="openIntro" aria-label="Open your anniversary surprise">
+        <img src="assets/images/sprites/letter-sealed.webp" alt="A pink envelope sealed with a heart" width="438" height="264">
+        <span class="intro-envelope-shine" aria-hidden="true">✦</span>
+      </button>
+      <p class="intro-note">There's a whole little world inside this letter.</p>
+      <button type="button" class="primary-button intro-start" id="introStart">Open your letter <span aria-hidden="true">↗</span></button>
+      <p class="intro-tiny">Made with all my heart ♡</p>
+    </div>
+  </div>
+
+  <main id="main">
+    <section class="hero chapter" id="home" aria-labelledby="heroHeading">
+      <picture class="hero-image">
+        <source srcset="assets/images/backgrounds/hero-mobile.webp" type="image/webp" media="(max-width: 700px)">
+        <img src="assets/images/backgrounds/hero-desktop.webp" alt="A magical moonlit balcony filled with cherry blossoms and a sleeping cat" width="1672" height="941" fetchpriority="high">
+      </picture>
+      <div class="hero-overlay"></div><div class="hero-stars" aria-hidden="true" id="heroStars"></div>
+      <button class="moon-secret" id="moonSecret" type="button" aria-label="Discover a hidden moonlight message" title="A little secret in the moon"><span class="visually-hidden">Secret moon message</span></button>
+      <div class="hero-content content-width">
+        <p class="eyebrow hero-eyebrow reveal">✧ &nbsp; HAPPY ANNIVERSARY &nbsp; ✧</p>
+        <h1 id="heroHeading" class="hero-heading reveal"><img src="assets/images/lettering/to-you-with-love-light.svg" alt="To You, With Love" width="865" height="146"></h1>
+        <p class="hero-subtitle reveal" id="heroSubtitle">A little world I made, just for you.</p>
+        <div class="heart-divider reveal" aria-hidden="true"><i></i><span>♡</span><i></i></div>
+        <div class="hero-actions reveal"><a href="#story" class="primary-button">Begin Our Story <span aria-hidden="true">→</span></a><button id="heroNote" type="button" class="text-button">A note for you <span aria-hidden="true">↗</span></button></div>
+      </div>
+      <div class="hero-bottom content-width">
+        <div class="love-counter" id="loveCounter" aria-live="off"><span class="love-counter-heart">♡</span><div><small>OUR LITTLE FOREVER</small><strong id="counterValue">Every moment with you</strong></div></div>
+        <a href="#story" class="scroll-cue" aria-label="Scroll to Our Story"><span>Scroll to explore</span><span class="scroll-cue-arrow">↓</span></a>
+      </div>
+      <div class="hero-transition" aria-hidden="true"></div>
+      <div class="seamless-edge edge-to-story" aria-hidden="true"></div>
+    </section>
+
+    <section class="story-section chapter section-rose" id="story" aria-labelledby="storyHeading">
+      <div class="story-scene" aria-hidden="true"></div>
+      <div class="section-top content-width reveal story-banner illustrated-banner">
+        <div class="chapter-copy">
+          <p class="eyebrow eyebrow-dark">CHAPTER ONE · THE STORY OF US</p>
+          <h2 id="storyHeading" class="image-title"><img src="assets/images/lettering/our-story-dark.svg" alt="Our Story" width="650" height="145"></h2>
+          <p class="section-description">Every beautiful story has a beginning. Ours is my favorite.</p>
+          <span class="banner-handwriting">Every page starts with you, Babi ♡</span>
+        </div>
+        <div class="chapter-art story-art" aria-hidden="true">
+          <!-- Each photo is INSIDE its own real Polaroid frame; frame + image move together. -->
+          <div class="real-polaroid-pair">
+            <figure class="real-polaroid real-polaroid--one">
+              <div class="real-polaroid-window"><img id="storyCoverPhoto1" src="assets/images/backgrounds/hero-desktop.webp" alt="Our first favorite memory" loading="lazy" decoding="async"></div>
+              <figcaption id="storyCoverCaption1">Our little world ♡</figcaption>
+            </figure>
+            <figure class="real-polaroid real-polaroid--two">
+              <div class="real-polaroid-window"><img id="storyCoverPhoto2" src="assets/images/backgrounds/our-story.webp" alt="Another beautiful memory" loading="lazy" decoding="async"></div>
+              <figcaption id="storyCoverCaption2">Together ♡</figcaption>
+            </figure>
+          </div>
+          <img class="art-blossoms story-blossoms" src="assets/images/sprites/flower-cluster.webp" alt="" width="409" height="168" loading="lazy">
+        </div>
+      </div>
+      <div class="story-roadmap content-width" id="timeline" aria-label="Our relationship timeline"></div>
+      <div class="story-footer content-width reveal"><span class="mini-heart">♡</span><p>And the best part? We're still writing it together.</p></div>
+      <div class="section-bottom-wave" aria-hidden="true"></div>
+      <div class="seamless-edge edge-to-reasons" aria-hidden="true"></div>
+    </section>
+
+    <section class="reasons-section chapter" id="reasons" aria-labelledby="reasonsHeading">
+      <div class="reasons-scenery" aria-hidden="true"></div>
+      <div class="section-top content-width reveal">
+        <p class="eyebrow">CHAPTER TWO · A THOUSAND LITTLE REASONS</p>
+        <h2 id="reasonsHeading" class="image-title title-light"><img src="assets/images/lettering/why-i-love-you-light.svg" alt="Why I Love You" width="865" height="145"></h2>
+        <p class="section-description">Some feelings are too big for words. So I put a few of them in the stars.</p>
+      </div>
+      <div class="constellation-wrap content-width reveal">
+        <div class="constellation" id="constellation" aria-label="Tap the stars to read reasons why I love you">
+          <svg class="constellation-line" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="M300 313 C265 282 80 183 82 106 C83 3 233 -8 300 90 C370 -15 518 5 518 106 C520 190 335 291 300 313"/></svg>
+          <button class="star-point star-1" type="button" data-star="0" aria-label="Reveal reason one">✦</button>
+          <button class="star-point star-2" type="button" data-star="1" aria-label="Reveal reason two">✦</button>
+          <button class="star-point star-3" type="button" data-star="2" aria-label="Reveal reason three">✦</button>
+          <button class="star-point star-4" type="button" data-star="3" aria-label="Reveal reason four">✦</button>
+          <button class="star-point star-5" type="button" data-star="4" aria-label="Reveal reason five">✦</button>
+          <button class="star-point star-6" type="button" data-star="5" aria-label="Reveal reason six">✦</button>
+          <button class="star-point star-7" type="button" data-star="6" aria-label="Reveal reason seven">✦</button>
+          <button class="star-point star-8" type="button" data-star="7" aria-label="Reveal reason eight">✦</button>
+          <div class="constellation-center" id="starMessage" aria-live="polite"><span class="constellation-symbol">✧</span><p>Touch a glowing star</p><small>and discover a reason ♡</small></div>
+        </div>
+        <button type="button" class="star-bonus" id="starBonus" hidden>✧ &nbsp; You found every star. Open your secret note &nbsp; ♡</button>
+      </div>
+      <p class="section-after-note reveal">There will never be enough stars to count all my reasons. <span aria-hidden="true">✧</span></p>
+      <div class="seamless-edge edge-to-surprises" aria-hidden="true"></div>
+    </section>
+
+    <section class="surprises-section chapter section-rose" id="surprises" aria-labelledby="surprisesHeading">
+      <div class="section-top content-width reveal chapter-title-centered surprises-banner">
+        <div class="chapter-copy">
+          <p class="eyebrow eyebrow-dark">CHAPTER THREE · ONLY FOR YOU</p>
+          <h2 id="surprisesHeading" class="image-title"><img src="assets/images/lettering/little-surprises-dark.svg" alt="Little Surprises" width="865" height="145"></h2>
+          <p class="section-description">A little magic in every ribbon. Tap the presents to unwrap something made just for my Babi.</p>
+          <span class="banner-handwriting">Three surprises, all yours ♡</span>
+        </div>
+      </div>
+      <div class="gifts-grid content-width" id="giftsGrid">
+        <button type="button" class="gift-card reveal" data-gift="0" aria-label="Unwrap surprise one"><span class="gift-no">01 / 03</span><img src="assets/images/sprites/gift-closed.webp" alt="A purple gift wrapped with a pink bow" loading="lazy"><span class="gift-title">A Jar of Promises</span><span class="gift-action">Draw a promise <span aria-hidden="true">↗</span></span></button>
+        <button type="button" class="gift-card reveal" data-gift="1" aria-label="Unwrap surprise two"><span class="gift-no">02 / 03</span><img src="assets/images/sprites/gift-opening.webp" alt="A glowing, partly opened gift box" loading="lazy"><span class="gift-title">Our Next Date</span><span class="gift-action">Find a date <span aria-hidden="true">↗</span></span></button>
+        <button type="button" class="gift-card reveal" data-gift="2" aria-label="Unwrap surprise three"><span class="gift-no">03 / 03</span><img src="assets/images/sprites/gift-glow.webp" alt="A sparkling gift with glowing hearts" loading="lazy"><span class="gift-title">Babi’s Love Coupons</span><span class="gift-action">Choose a coupon <span aria-hidden="true">↗</span></span></button>
+      </div>
+      <div class="unwrapped-caption reveal" id="unwrappedCaption" aria-live="polite">A promise jar, a date surprise, and love coupons—all for Babi ♡</div>
+      <div class="section-bottom-wave" aria-hidden="true"></div>
+      <div class="seamless-edge edge-to-letters" aria-hidden="true"></div>
+    </section>
+
+    <section class="letters-section chapter" id="letters" aria-labelledby="lettersHeading">
+      <div class="letters-glow" aria-hidden="true"></div>
+      <div class="section-top content-width reveal chapter-title-centered letters-banner">
+        <div class="chapter-copy">
+          <p class="eyebrow eyebrow-dark">CHAPTER FOUR · FOR EVERY KIND OF DAY</p>
+          <h2 id="lettersHeading" class="image-title"><img src="assets/images/lettering/letters-for-you-dark.svg" alt="Letters for You" width="865" height="145"></h2>
+          <p class="section-description">A little envelope for every feeling. Open one whenever you need my words beside you.</p>
+          <span class="banner-handwriting">Sealed with a hundred kisses ♡</span>
+        </div>
+      </div>
+      <div class="letters-grid content-width" id="lettersGrid"></div>
+      <p class="letters-bottom-note reveal">A different envelope for every kind of day, Babi. ♡</p>
+      <div class="seamless-edge edge-to-final" aria-hidden="true"></div>
+    </section>
+
+    <section class="final-section chapter" id="forever" aria-labelledby="finalHeading">
+      <div class="final-background" aria-hidden="true"></div><div class="final-overlay" aria-hidden="true"></div>
+      <div class="final-content content-width reveal">
+        <p class="eyebrow">THE FINAL CHAPTER · TODAY AND ALWAYS</p>
+        <h2 id="finalHeading" class="image-title title-light"><img src="assets/images/lettering/my-anniversary-letter-light.svg" alt="My Anniversary Letter" width="865" height="145"></h2>
+        <p class="final-subtitle">The words I want you to know, today and always.</p>
+        <div class="letter-display">
+          <div class="final-paper-art" aria-hidden="true"><img src="assets/images/sprites/letter-card.webp" alt="" width="394" height="361" loading="lazy"><div class="final-paper-preview" aria-label="Preview of your anniversary letter">
+             <span class="paper-to" id="paperGreeting">My dearest Babi,</span>
+             <p class="paper-copy" id="paperExcerpt">I have a thousand things I want to say, and every one starts with you.</p>
+             <span class="paper-signature" id="paperSignoff">Forever yours ♡</span>
+          </div></div>
+          <div class="letter-display-content"><span class="letter-display-kicker" id="letterDisplayKicker">For you, Babi</span><h3>A letter from my heart</h3><p>There are so many things I could say, but I saved the most important ones for the end.</p><button type="button" class="primary-button primary-button-dark" id="openFinalLetter">Open Babi’s letter <span aria-hidden="true">♡</span></button></div>
+        </div>
+        <p class="signature">All my love, <span id="signatureName">Your person</span> ♡</p>
+        <button type="button" class="quiet-button" id="replayStory">↻ &nbsp; Experience our story again</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><span>Made with love, a little code, and a lot of heart.</span><span>♡ &nbsp; Only for you &nbsp; ♡</span></footer>
+  <div class="petal-field" id="petalField" aria-hidden="true"></div>
+  <div class="heart-burst" id="heartBurst" aria-hidden="true"></div>
+
+  <dialog class="love-dialog" id="loveDialog" aria-labelledby="dialogTitle">
+    <button type="button" class="dialog-close" id="dialogClose" aria-label="Close message">×</button>
+    <div class="dialog-sparkle" aria-hidden="true">✧</div>
+    <p class="dialog-eyebrow" id="dialogEyebrow">A LITTLE NOTE FOR YOU</p>
+    <h2 id="dialogTitle"></h2>
+    <div class="dialog-body" id="dialogBody"></div>
+    <div class="dialog-signoff" id="dialogSignoff">With all my love ♡</div>
+  </dialog>
+  <noscript><style>body{overflow:auto!important}.intro-screen{display:none!important}</style><div class="noscript-banner">Please enable JavaScript to open the interactive letters, gifts, and stars.</div></noscript>
+</body>
+</html>

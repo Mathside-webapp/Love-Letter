@@ -1,0 +1,142 @@
+/* Version 4 – continuous illustrated scroll, without cut rectangular wave panels.
+   Each SVG ends exactly where the next section begins. It is a vector mask, not
+   a stretched raster image. Backgrounds retain their proportions. */
+:root{--section-story:#f6dbe5;--section-reasons:#281734;--section-surprises:#f4d6e5;--section-letters:#f7deec;--section-final:#22122a}
+/* Remove the last V3 clip-path which cut off scene artwork along horizontal lines. */
+.story-section,.surprises-section,.letters-section{clip-path:none}
+.story-section,.reasons-section,.surprises-section,.letters-section,.final-section{isolation:isolate}
+/* Base section colors exactly match the end of the preceding vector wave. */
+.story-section{background:linear-gradient(180deg,var(--section-story) 0%,#fce8e9 58%,#f7dce5 100%)}
+.reasons-section{background:var(--section-reasons)}
+.surprises-section{background:linear-gradient(180deg,var(--section-surprises) 0%,#fff0e8 60%,#f4d7e2 100%)}
+.letters-section{background:linear-gradient(180deg,var(--section-letters) 0%,#ffe9ea 61%,#f2cada 100%)}
+.final-section{background:var(--section-final)}
+/* Fix the original cutting: the old waves extended 60px into the next section,
+   leaving a hard straight lower edge. These now END exactly at its start. */
+.story-section::before,.reasons-section::before,.surprises-section::before,.letters-section::after,.final-section::before{
+  top:-125px;height:125px;bottom:auto;background-size:100% 100%;background-position:center bottom;
+  z-index:1;pointer-events:none;
+}
+/* Atmospheric artwork is placed at its aspect-ratio size; extra content grows
+   into matching colors rather than vertically stretching or repeating photos. */
+.story-scene{
+  background-image:linear-gradient(180deg,transparent 0%,#f6dbe53b 45%,#f7dce5 100%),url(../images/backgrounds/our-story.webp);
+  background-size:100% 100%,100% auto;
+  background-position:center,center 0;
+  background-repeat:no-repeat;
+  opacity:.5;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,black 150px,black 66%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,black 150px,black 66%,transparent 100%);
+}
+.reasons-scenery{
+  background-image:linear-gradient(180deg,#281734 0%,#28173490 22%,#28173454 60%,#281734 100%),url(../images/backgrounds/why-i-love-you.webp);
+  background-size:100% 100%,100% auto;
+  background-position:center,center top;
+  background-repeat:no-repeat;
+}
+.final-background{
+  background-image:url(../images/backgrounds/hero-desktop.webp);
+  background-size:100% auto;background-repeat:no-repeat;background-position:center top;
+  opacity:.62;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,black 140px,black 65%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,black 140px,black 65%,transparent 100%);
+}
+.final-overlay{background:linear-gradient(180deg,#22122aab,#38214670 40%,#22122af0 100%)}
+/* Keep the underlying chapter layouts roomy instead of forcing backgrounds to
+   fill taller placeholders. Chapter height comes from actual content. */
+.story-section{padding-top:64px;padding-bottom:110px}
+.reasons-section{padding-top:60px;padding-bottom:90px}
+.surprises-section{padding:70px 0 105px}
+.letters-section{padding:74px 0 115px}
+.final-section{padding-top:135px;padding-bottom:105px}
+/* Big gift and envelope artworks REMOVED only from the chapter introduction.
+   Functional mini-gift items and clickable letter envelopes remain below. */
+.chapter-title-centered{
+  display:flex!important;justify-content:center;align-items:center;text-align:center!important;
+  min-height:auto!important;padding-top:34px!important;padding-bottom:26px!important;
+  position:relative;z-index:2;
+}
+.chapter-title-centered .chapter-copy{width:min(720px,100%);margin:0 auto;padding:0!important;text-align:center}
+.chapter-title-centered .eyebrow{text-align:center!important}
+.chapter-title-centered .image-title img{width:min(560px,100%)!important;margin:0 auto!important}
+.chapter-title-centered .section-description{max-width:530px!important;margin:12px auto 0!important;text-align:center;font:400 clamp(13px,1.35vw,16px)/1.8 var(--serif);color:#693f59}
+.chapter-title-centered .banner-handwriting{margin-top:10px;line-height:1.35;color:#ac678c}
+.surprises-section .gifts-grid{margin-top:10px}
+.letters-section .letters-grid{margin-top:14px}
+/* The final parchment now shows real words from config.js rather than a lone heart. */
+.final-paper-heart{display:none!important}
+.final-paper-art{isolation:isolate}
+.final-paper-art>img{z-index:0}
+.final-paper-preview{
+  position:absolute;z-index:2;inset:25% 17% 22% 17%;transform:rotate(-5deg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  color:#75445a;text-align:center;pointer-events:none;min-width:0;
+}
+.paper-to{font:400 clamp(21px,2vw,27px)/1.2 var(--script);color:#955c76}
+.paper-copy{font:italic 12px/1.75 var(--serif);color:#704963!important;letter-spacing:0;max-width:230px;margin:0!important;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.paper-signature{font:400 20px/1.2 var(--script);color:#955c76}
+/* Compensate for the original hero's scenery: the vector curve begins at the
+   previous scene's bottom; the next chapter color is continuous below it. */
+.hero{z-index:2}
+.hero-bottom{z-index:3}
+@media(max-width:850px){
+ .reasons-section{padding-top:48px;padding-bottom:85px}
+ .reasons-section .section-top{padding-top:75px}
+ .chapter-title-centered{width:min(720px,calc(100% - 50px))}
+ .final-section{padding-top:95px}
+}
+@media(max-width:700px){
+ .story-section::before,.reasons-section::before,.surprises-section::before,.letters-section::after,.final-section::before{top:-68px;height:68px}
+ .story-section{padding:30px 0 85px}
+ .reasons-section{padding:40px 0 80px}
+ .surprises-section{padding:40px 0 65px}
+ .letters-section{padding:45px 0 70px}
+ .final-section{padding:90px 0 80px}
+ .chapter-title-centered{width:calc(100% - 36px);padding-top:28px!important;padding-bottom:25px!important}
+ .chapter-title-centered .image-title img{width:min(355px,95%)!important}
+ .chapter-title-centered .eyebrow{font-size:9px;letter-spacing:1.5px}
+ .chapter-title-centered .section-description{font-size:12px;line-height:1.7;max-width:330px!important}
+ .chapter-title-centered .banner-handwriting{font-size:25px}
+ .story-scene{background-size:100% 100%,auto 400px;background-position:center,center top}
+ .reasons-scenery{background-size:100% 100%,auto 670px;background-position:center,center top}
+ .final-background{background-size:auto 540px;background-position:center top}
+ .final-paper-preview{inset:25% 17% 21% 17%;gap:8px}
+ .paper-to{font-size:24px}
+ .paper-copy{font-size:10px!important;line-height:1.5!important;-webkit-line-clamp:5}
+ .paper-signature{font-size:18px}
+}
+@media(max-width:390px){
+ .chapter-title-centered .image-title img{width:100%!important}
+ .paper-to{font-size:20px}
+ .paper-copy{font-size:9px!important;line-height:1.4!important;-webkit-line-clamp:4}
+ .paper-signature{font-size:16px}
+}
+
+/* Continuous overlay waves: the color of EACH next panel is painted inside
+   the preceding one. They never form horizontal slabs or hidden overhangs. */
+.story-section::before,.reasons-section::before,.surprises-section::before,
+.letters-section::after,.final-section::before{content:none!important;background:none!important}
+.seamless-edge{position:absolute;left:0;bottom:-1px;right:0;height:115px;z-index:12;
+ background-size:100% 100%;background-position:center bottom;background-repeat:no-repeat;
+ pointer-events:none;user-select:none}
+.edge-to-story{background-image:url(../images/waves/rose-story.svg)}
+.edge-to-reasons{background-image:url(../images/waves/night-reasons.svg)}
+.edge-to-surprises{background-image:url(../images/waves/rose-surprises.svg)}
+.edge-to-letters{background-image:url(../images/waves/rose-letters.svg)}
+.edge-to-final{background-image:url(../images/waves/night-final.svg)}
+.hero-bottom{bottom:125px}
+.reasons-scenery{-webkit-mask-image:linear-gradient(to bottom,transparent 0,black 155px,black 100%);mask-image:linear-gradient(to bottom,transparent 0,black 155px,black 100%)}
+/* Keep the story note, stars, gifts and letters visible ABOVE the curve. */
+.story-section{padding-bottom:145px}
+.reasons-section{padding-bottom:135px}
+.surprises-section{padding-bottom:128px}
+.letters-section{padding-bottom:135px}
+@media(max-width:700px){
+ .seamless-edge{height:65px}
+ .hero-bottom{bottom:92px}
+ .story-section{padding-bottom:100px}
+ .reasons-section{padding-bottom:95px}
+ .surprises-section{padding-bottom:83px}
+ .letters-section{padding-bottom:88px}
+ .reasons-scenery{-webkit-mask-image:linear-gradient(to bottom,transparent 0,black 85px,black 100%);mask-image:linear-gradient(to bottom,transparent 0,black 85px,black 100%)}
+}

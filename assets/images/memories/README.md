@@ -1,0 +1,1 @@
+Put your OWN images in this folder; reference filenames in assets/js/config.js in the corresponding memories items. Suggested WebP/JPEG images, 1200–1800px on the long edge, usually 200–500 KB each. Personal photos do not come included.

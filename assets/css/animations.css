@@ -1,0 +1,16 @@
+/* All decorative animations are subtle and respect reduced-motion settings. */
+@keyframes twinkle{0%{opacity:.4;filter:brightness(.85);transform:scale(.87)}100%{opacity:1;filter:brightness(1.6);transform:scale(1.13)}}
+@keyframes scrollBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+@keyframes floatSlow{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+@keyframes petalFall{0%{opacity:0;transform:translate3d(0,-20px,0) rotate(0)}8%{opacity:.8}86%{opacity:.65}100%{transform:translate3d(var(--drift,70px),110vh,0) rotate(var(--twist,260deg));opacity:0}}
+@keyframes burstUp{0%{opacity:0;transform:translate3d(0,10px,0) scale(.65) rotate(-8deg)}15%{opacity:1}100%{opacity:0;transform:translate3d(var(--x,40px),var(--y,-180px),0) scale(1.5) rotate(var(--r,30deg))}}
+@keyframes giftGlow{0%,100%{filter:drop-shadow(0 10px 10px #6641692e)}50%{filter:drop-shadow(0 0 25px #ffbe94c5)}}
+@keyframes dialogEnter{0%{opacity:0;transform:translateY(30px) scale(.96)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes starRise{0%{transform:translateY(0) scale(0);opacity:0}40%{opacity:.9}100%{transform:translateY(-16px) scale(1);opacity:0}}
+.has-js .reveal{opacity:0;transform:translateY(28px);transition:opacity .75s ease,transform .85s cubic-bezier(.22,1,.36,1)}
+.has-js .reveal.is-visible{opacity:1;transform:translateY(0)}
+.hero-stars::before,.hero-stars::after{content:"✧";position:absolute;color:#fff4dd;background:transparent;text-shadow:0 0 18px #fff0c3;font-size:21px;animation:twinkle 3s alternate infinite}.hero-stars::before{top:17%;left:34%}.hero-stars::after{top:31%;right:25%;animation-delay:1.4s;font-size:13px}
+.memory-card:nth-child(even).reveal.is-visible{transform:translateY(15px) rotate(1deg)}.memory-card:nth-child(even).reveal.is-visible:hover{transform:translateY(5px) rotate(0deg)}
+.star-point:nth-of-type(2n){animation-delay:-.9s}.star-point:nth-of-type(3n){animation-delay:-1.5s}
+.intro-envelope-button img{animation:floatSlow 4.5s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}.has-js .reveal{opacity:1;transform:none}.memory-card:nth-child(even).reveal.is-visible{transform:none}}

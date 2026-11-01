@@ -1,0 +1,61 @@
+/* V5: True Polaroid frames: the image is nested INSIDE the frame.
+   No baked-in photographic sprites and no independently floating photo layers. */
+.photo-memory-preview,.story-photo-art{display:none!important}
+.story-art{min-height:350px;display:block;position:relative;isolation:isolate}
+.real-polaroid-pair{position:relative;width:min(485px,100%);height:355px;margin:auto;isolation:isolate}
+.real-polaroid{position:absolute;box-sizing:border-box;margin:0;width:47%;padding:13px 13px 39px;
+ background:linear-gradient(150deg,#fffaf6,#ffefed);border:1px solid rgba(255,255,255,.9);
+ box-shadow:0 2px 2px #ad748c70,0 18px 27px #6d3c684c,inset 0 0 0 2px #f9d8d78a;
+ border-radius:7px;transform-origin:center;overflow:hidden;will-change:transform}
+.real-polaroid--one{left:6%;top:13%;z-index:3;transform:rotate(-10deg);animation:floatPolaroidOne 7s ease-in-out infinite}
+.real-polaroid--two{right:5%;top:19%;z-index:2;transform:rotate(9deg);animation:floatPolaroidTwo 8s ease-in-out infinite}
+.real-polaroid-window{width:100%;aspect-ratio:1 / 1.08;overflow:hidden;background:#c9abc4;border:1px solid #dfc7ce;box-shadow:inset 0 1px 3px #38233a66}
+.real-polaroid-window img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;max-width:none;filter:none;transform:none;animation:none}
+.real-polaroid figcaption{position:absolute;bottom:6px;left:8px;right:8px;height:26px;display:flex;align-items:center;justify-content:center;
+ overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#a15b85;font:400 23px/1.05 var(--script);text-shadow:none;letter-spacing:0}
+.story-art .story-blossoms{z-index:4;width:40%;left:0;bottom:-16px;pointer-events:none}
+@keyframes floatPolaroidOne{0%,100%{transform:translateY(0) rotate(-10deg)}50%{transform:translateY(-10px) rotate(-9deg)}}
+@keyframes floatPolaroidTwo{0%,100%{transform:translateY(0) rotate(9deg)}50%{transform:translateY(9px) rotate(8deg)}}
+@media(max-width:700px){
+ .story-art{min-height:255px}
+ .real-polaroid-pair{height:255px;width:min(355px,98%)}
+ .real-polaroid{padding:9px 9px 29px;border-radius:5px}
+ .real-polaroid--one{left:6%;top:10%}
+ .real-polaroid--two{right:5%;top:15%}
+ .real-polaroid figcaption{font-size:18px;bottom:3px;height:20px}
+ .story-art .story-blossoms{width:40%;bottom:-2px}
+}
+@media(max-width:390px){.real-polaroid-pair{height:220px}.story-art{min-height:220px}.real-polaroid{padding:8px 8px 26px}}
+@media(prefers-reduced-motion:reduce){.real-polaroid{animation:none!important}}
+/* The original extra-wide colored padding caused large blank pink strips at
+   chapter boundaries. Keep illustrations uncropped and move contents upward. */
+.story-section{padding-top:26px}
+.story-banner{padding-top:14px!important}
+.story-section .story-roadmap{padding-top:20px}
+.story-section .story-footer{margin-top:60px}
+@media(max-width:700px){.story-section{padding-top:17px}.story-section .story-roadmap{padding-top:19px}.story-section .story-footer{margin-top:52px}}
+
+/* Remove the floating, opaque wave slabs from V3/V4. The illustration is NOT
+   stretched: its native image aspect ratio is retained by seamless-v4.css.
+   Short, transparent color dissolves now join the adjacent chapters. */
+.seamless-edge{display:none!important}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:92px;z-index:1;
+ pointer-events:none;background:linear-gradient(to bottom,transparent,#f6dbe5)}
+.reasons-section::before,.surprises-section::before,.final-section::before{content:""!important;
+ position:absolute;left:0;right:0;top:0!important;bottom:auto!important;height:90px!important;
+ background-image:none!important;pointer-events:none;z-index:2}
+.reasons-section::before{background:linear-gradient(to bottom,#f7dce5,transparent)!important}
+.surprises-section::before{background:linear-gradient(to bottom,#281734,transparent)!important}
+.final-section::before{background:linear-gradient(to bottom,#f2cada,transparent)!important}
+.story-section{padding-bottom:82px}
+.reasons-section{padding-bottom:78px}
+.surprises-section{padding-bottom:76px}
+.letters-section{padding-bottom:76px}
+@media(max-width:700px){
+ .hero::after{height:65px}
+ .reasons-section::before,.surprises-section::before,.final-section::before{height:70px!important}
+ .story-section{padding-bottom:56px}
+ .reasons-section{padding-bottom:55px}
+ .surprises-section{padding-bottom:55px}
+ .letters-section{padding-bottom:55px}
+}

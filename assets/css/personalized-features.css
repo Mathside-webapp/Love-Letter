@@ -1,0 +1,59 @@
+/* Babi edition: a distinct experience in every chapter. Loaded after base CSS. */
+:root { --soft-mauve:#b178a3; --peach-glow:#fff1dc; }
+/* Star messages can contain an optional photograph without covering the heart. */
+.constellation-center { width:min(315px,67%); max-height:75%;display:flex;flex-direction:column;align-items:center;justify-content:center; gap:3px; }
+.constellation-center.show-reason p {font-size:clamp(12px,1.6vw,16px);line-height:1.42;margin:2px 0;max-width:100%;}
+.star-reason-title {color:#ffe6b4;text-transform:uppercase;font:500 9px/1.3 var(--sans);letter-spacing:2px;}
+.constellation-photo {width:75px;height:60px;object-fit:cover;border:3px solid #fff5e9;border-bottom-width:9px;box-shadow:0 7px 18px #190f25a3;transform:rotate(-5deg);margin:0 auto 3px;}
+.star-bonus {display:block;margin:8px auto 0;padding:11px 19px;border:1px solid #ffe4b675;border-radius:999px;background:#e6a7c12b;color:#ffe9dc;box-shadow:0 0 25px #e6a7c13a;font:500 12px var(--sans);cursor:pointer;animation:bonusAppear .55s ease-out both;}
+.star-bonus[hidden] {display:none;}.star-bonus:hover {background:#ffd7dd44;}
+@keyframes bonusAppear{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* Three gift types have their own accents and a different action once opened. */
+.gift-card:nth-child(1){background:linear-gradient(155deg,#fff8f5e7,#e8c8dbcf)}
+.gift-card:nth-child(2){background:linear-gradient(155deg,#fff9ebec,#e9d3f0c9)}
+.gift-card:nth-child(3){background:linear-gradient(155deg,#fff1f3e9,#d6bedaf0)}
+.gift-card:nth-child(2) img{filter:drop-shadow(0 10px 17px #b27fa0a8) hue-rotate(16deg)}
+.gift-card:nth-child(3) img{filter:drop-shadow(0 10px 17px #b27fa0a8) hue-rotate(-14deg)}
+.mini-experience {font-family:var(--sans);margin:18px 0 6px;padding:18px 19px 21px;background:#ffffffb9;border:1px solid #fff;border-radius:18px;box-shadow:0 6px 20px #713a6922;text-align:center;}
+.mini-icon {font:40px/1.3 var(--script);color:#bb7296;}
+.mini-title {font:600 17px/1.4 var(--serif);color:#743e67;margin:3px 0 14px;}
+.mini-result {color:#70445e;font:italic 16px/1.8 var(--serif);margin:15px auto;min-height:55px;}
+.mini-result.pop {animation:resultIn .45s cubic-bezier(.2,.8,.2,1) both;}
+@keyframes resultIn{from{opacity:.3;transform:scale(.94) translateY(7px)}to{opacity:1;transform:none}}
+.mini-experience-action {background:#875372;color:#fffaf2;border:1px solid #bf8da4;border-radius:28px;padding:10px 20px;font:500 12px var(--sans);box-shadow:0 4px 16px #7e416752;}
+.mini-experience-action:hover {background:#a16c8c;}
+.coupon-row {display:flex;align-items:center;justify-content:space-between;text-align:left;gap:10px;border:1px dashed #dcaabc;background:#fff8f6;border-radius:12px;padding:12px 10px;margin:9px 0; font:400 13px/1.5 var(--serif);}
+.coupon-row span {flex:1;}
+.coupon-copy {padding:7px 10px;border:1px solid #d4a0b6;border-radius:10px;white-space:nowrap;background:#f7e1e9;color:#743d65;font:600 10px var(--sans);}
+.coupon-copy:hover{background:#efd0e1;}
+/* Photo galleries for memories and the Open When letters. */
+.memory-gallery {margin:4px 0 17px;}
+.memory-gallery>.dialog-photo {display:block;width:100%;max-width:365px;height:auto;max-height:260px;object-fit:contain;box-shadow:0 8px 18px #58283e3b;background:#ffece8;padding:6px;border:1px solid #eac2ca;border-radius:8px;}
+.gallery-caption {font:italic 11px var(--serif);text-align:center;color:#a16f86;margin:8px auto;}
+.gallery-thumbnails {display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px;margin:12px auto;}
+.gallery-thumb {height:49px;width:58px;border:2px solid transparent;border-radius:7px;padding:2px;background:#f6dfe9;overflow:hidden;}
+.gallery-thumb.active {border-color:#a65a80;box-shadow:0 0 0 2px #efd0dd;}
+.gallery-thumb img {height:100%;width:100%;object-fit:cover;}
+.voice-note {background:#fff8f6;border:1px dashed #c68da9;border-radius:14px;padding:12px;margin:12px 0 22px;display:flex;flex-direction:column;gap:8px;}
+.voice-label {font:600 10px var(--sans);color:#83526e;letter-spacing:1px;text-transform:uppercase;}
+.voice-note audio {width:100%;height:39px;}
+/* Letters can be opened again at any time; each has its own mood. */
+.letter-card {position:relative;}
+.letter-card.mood-0 {background:linear-gradient(165deg,#f4d8e526,#b16e9b16);}
+.letter-card.mood-1 {background:linear-gradient(165deg,#c4a2d526,#8062ba28);}
+.letter-card.mood-2 {background:linear-gradient(165deg,#9fa3d122,#5f75a73e);}
+.letter-card.mood-3 {background:linear-gradient(165deg,#fbd59d2b,#df9bad2f);}
+.letter-card .letter-detail {color:#ffddbd;font-size:8px;letter-spacing:1.5px;display:block;line-height:1.6;}
+.letter-card.has-opened::after {content:'♡';position:absolute;top:12px;right:12px;color:#ffe7bb;font:23px var(--serif);text-shadow:0 0 12px #fcbdd8;}
+@media(max-width:700px){
+ .constellation-photo {height:43px;width:52px;border-width:2px;border-bottom-width:7px;}
+ .star-reason-title{font-size:7px;letter-spacing:1px;}
+ .constellation-center.show-reason p{font-size:clamp(10px,2.9vw,13px);line-height:1.25;margin:0;}
+ .constellation-center{gap:1px;max-height:85%;}
+ .constellation-center .constellation-symbol{font-size:16px;}
+ .star-bonus {font-size:10px;max-width:90%;}
+ .letter-card .letter-detail {font-size:7px;letter-spacing:.6px;}
+ .mini-experience{padding:12px 10px 17px;}
+ .coupon-row {font-size:12px;}
+}
+@media(prefers-reduced-motion:reduce){.star-bonus,.mini-result.pop{animation:none;}}

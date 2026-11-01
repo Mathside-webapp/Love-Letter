@@ -1,0 +1,179 @@
+/* V3: approved illustrated-scroll concept. Loaded last so every V2 feature remains. */
+:root { --ribbon-rose:#f6dbe5; --ribbon-light:#f7deec; --velvet:#281734; }
+/* Large sweeping fabric-like chapter edges, not box-shaped section breaks. */
+.chapter{isolation:isolate}
+.story-section,.reasons-section,.surprises-section,.letters-section,.final-section{overflow:visible}
+.story-section{background:linear-gradient(160deg,#f6dbe5,#fbe6e7 55%,#f3cbdc);z-index:4;padding:70px 0 135px}
+.reasons-section{background:#281734;z-index:5;padding-bottom:75px}
+.surprises-section{background:linear-gradient(165deg,#f4d6e5,#fff0e8 45%,#f0cddd);z-index:6;padding:50px 0 140px}
+.letters-section{background:linear-gradient(168deg,#f7deec,#ffe9ea 60%,#f2cada);z-index:7;padding:50px 0 155px;color:#4c2946}
+.final-section{z-index:8;padding:130px 0 145px}
+.story-section::before,.reasons-section::before,.surprises-section::before,.letters-section::after,.final-section::before{content:"";position:absolute;left:0;right:0;top:-125px;height:185px;z-index:0;pointer-events:none;background-repeat:no-repeat;background-size:100% 100%;background-position:bottom}
+.story-section::before{background-image:url(../images/waves/rose-story.svg)}
+.reasons-section::before{background-image:url(../images/waves/night-reasons.svg)}
+.surprises-section::before{background-image:url(../images/waves/rose-surprises.svg)}
+.letters-section::after{top:-125px;background-image:url(../images/waves/rose-letters.svg)}
+.final-section::before{background-image:url(../images/waves/night-final.svg)}
+.story-section .section-bottom-wave,.surprises-section .section-bottom-wave,.hero-transition{display:none}
+.story-scene{position:absolute;inset:0;background:radial-gradient(ellipse at 18% 36%,#fff8eeae,transparent 43%),linear-gradient(175deg,#f7d8e4ec 6%,#f8dce1a8 52%,#fbe5e8e5 100%),url(../images/backgrounds/our-story.webp) center/cover no-repeat;opacity:.92}
+.story-section::after,.surprises-section::after,.letters-section::before{content:"";position:absolute;width:min(35vw,420px);height:min(20vw,200px);z-index:1;pointer-events:none;background:url(../images/sprites/flower-cluster.webp) center/contain no-repeat;filter:drop-shadow(0 8px 12px #7e345a32)}
+.story-section::after{top:22px;left:-9%;transform:rotate(12deg)}
+.surprises-section::after{bottom:30px;right:-8%;transform:scaleX(-1) rotate(-12deg)}
+.letters-section::before{bottom:8px;left:-5%;transform:rotate(-11deg)}
+/* Curved story ribbon with actual illustrated Polaroids. */
+.illustrated-banner{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:30px;min-height:300px;text-align:left!important;position:relative;z-index:2}
+.illustrated-banner .chapter-copy{position:relative;z-index:2;padding:20px 0}
+.illustrated-banner .image-title img{margin-left:0;width:min(390px,100%);filter:drop-shadow(0 3px 3px #a76c826e)}
+.illustrated-banner .eyebrow{text-align:left}
+.illustrated-banner .section-description{margin:8px 0 0;max-width:390px;font:400 15px/1.9 var(--serif);color:#683c59}
+.banner-handwriting{display:block;font:400 clamp(24px,3vw,34px)/1.5 var(--script);color:#ac678c;margin-top:11px}
+.chapter-art{position:relative;min-height:285px;display:grid;place-items:center;pointer-events:none}
+.chapter-art img{position:relative;max-width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 16px 17px #7d3f6b63)}
+.story-banner{padding-top:20px!important}
+.story-photo-art{width:min(440px,100%);transform:rotate(2deg);animation:floatArt 6s ease-in-out infinite}
+.chapter-art .art-blossoms{width:230px;position:absolute;z-index:2;filter:drop-shadow(0 8px 5px #a8617980)}
+.story-blossoms{bottom:-10px;left:0;transform:rotate(8deg)}
+.story-roadmap{padding-top:50px;position:relative;z-index:2}
+.story-roadmap::before{top:27px;border-top:2px dashed #a85b7a80}
+.memory-card{background:linear-gradient(#fff9f6,#fff0ee);border:9px solid #fff8f1;border-bottom-width:18px;border-radius:5px;box-shadow:0 14px 30px #73335145;transform:rotate(-2deg);padding:0 0 10px}
+.memory-card:nth-child(even){transform:translateY(21px) rotate(3deg)}
+.memory-card:hover{transform:translateY(-10px) rotate(0deg)}
+.memory-card::before{top:-34px}
+.memory-photo{border-radius:2px;height:177px}
+.memory-index,.memory-title,.memory-hint{margin-left:10px!important;margin-right:10px!important}
+.story-footer{margin-top:92px}
+/* Constellation scene: heart is the illustration, not a flat card. */
+.reasons-section{display:grid;grid-template-columns:minmax(28px,1fr) minmax(0,570px) minmax(0,570px) minmax(28px,1fr);grid-template-rows:auto auto;align-items:center;min-height:660px}
+.reasons-scenery{inset:0;background:linear-gradient(105deg,#271635c9,#31153a8e 52%,#261632a3),url(../images/backgrounds/why-i-love-you.webp) center/cover no-repeat}
+.reasons-section .section-top{grid-column:3;grid-row:1;width:94%;text-align:left;padding-top:92px;padding-left:34px;justify-self:start;align-self:center}
+.reasons-section .section-top .image-title img{margin-left:0;width:min(450px,100%)}
+.reasons-section .section-top .section-description{margin:8px 0;max-width:350px;color:#ffe2e8}
+.reasons-section .constellation-wrap{grid-column:2;grid-row:1;align-self:center;width:100%;margin:60px 0 0}
+.reasons-section .constellation{width:100%}
+.reasons-section .section-after-note{grid-column:2 / 4;grid-row:2;margin:0 auto 45px}
+/* Illustrated gift stages: floating gift boxes, no generic white cards. */
+.surprises-section .surprises-banner{padding-top:12px;grid-template-columns:1fr 1fr}
+.surprise-art{min-height:315px}
+.gift-feature{width:min(380px,90%);animation:floatArt 5.5s ease-in-out infinite;filter:drop-shadow(0 24px 22px #cc7d9578)!important}
+.surprise-blossoms{bottom:5px;left:0;transform:rotate(-16deg)}
+.gifts-grid{margin-top:10px;gap:20px;align-items:end}
+.gift-card,.gift-card:nth-child(1),.gift-card:nth-child(2),.gift-card:nth-child(3){background:transparent;border:none;box-shadow:none;border-radius:0;padding:15px 12px;min-height:320px;overflow:visible;color:#703957;transition:transform .3s}
+.gift-card::before{content:none}
+.gift-card:nth-child(2){transform:translateY(21px)}
+.gift-card:nth-child(3){transform:translateY(-6px)}
+.gift-card:hover,.gift-card:nth-child(2):hover,.gift-card:nth-child(3):hover{transform:translateY(-9px) scale(1.035);box-shadow:none}
+.gift-card img{width:min(270px,95%);height:235px;filter:drop-shadow(0 16px 18px #8e446e65)!important}
+.gift-card .gift-title{font:500 21px var(--serif);color:#633956;text-shadow:0 1px #fff9ee}
+.gift-card .gift-no{font:600 11px var(--sans);letter-spacing:2.5px;color:#985c7e}
+.gift-action{border-bottom:1px solid #9e6c88;padding:4px 8px;font-size:11px}
+.gift-card[data-open="true"]{background:transparent}
+.unwrapped-caption{margin-top:35px;font-size:16px}
+/* Pink letter ribbon. The artwork and envelope themselves are interactive. */
+.letters-glow{background:radial-gradient(ellipse at 50% 20%,#fff7ef9e,transparent 69%)}
+.letters-section .letters-banner{padding-top:40px;grid-template-columns:1fr 1fr}
+.letters-art{min-height:295px}
+.letter-feature{width:min(310px,74%);transform:rotate(-12deg) translate(-30px,-15px);animation:floatArt 6.2s ease-in-out infinite}
+.letter-feature-secondary{width:min(240px,60%);position:absolute!important;right:0;bottom:-3px;transform:rotate(12deg);z-index:-1}
+.letters-blossoms{left:0;bottom:6px;transform:rotate(-15deg)}
+.letters-grid{margin-top:9px;gap:24px;align-items:start}
+.letter-card,.letter-card.mood-0,.letter-card.mood-1,.letter-card.mood-2,.letter-card.mood-3{color:#653757;background:transparent;border:0;border-radius:0;box-shadow:none;padding:9px 5px 15px;min-height:260px}
+.letter-card:hover{background:transparent;border:none;transform:translateY(-10px) rotate(-2deg)}
+.letter-card img{height:185px;width:min(255px,100%);filter:drop-shadow(0 15px 14px #9f5a7e70)}
+.letter-card .letter-when{font:400 27px/1.1 var(--script);color:#733f63;margin:7px 0 0}
+.letter-card .letter-detail{color:#9b6284}
+.letter-card .letter-tap{color:#815478;font-size:10px;border-bottom:1px solid #9d738d}
+.letters-bottom-note{color:#985b83;margin-top:20px}
+.letter-card.has-opened::after{color:#9e5c78}
+/* Finale: parchment and large envelope art should own the scene, not a solid rounded card. */
+.final-background{background:url(../images/backgrounds/hero-desktop.webp) center 53%/cover no-repeat;opacity:.62}
+.final-overlay{background:linear-gradient(180deg,#28142fef,#3a1d49c5 45%,#23132ef4)}
+.final-section .final-content{padding-top:5px}
+.letter-display{background:transparent;border:0;box-shadow:none;max-width:880px;grid-template-columns:1.1fr 1fr;padding:12px 25px;gap:20px}
+.letter-display::before{content:none}
+.final-paper-art{position:relative;min-height:375px;display:grid;place-items:center}
+.final-paper-art img{width:min(360px,100%);height:auto;transform:rotate(-5deg);filter:drop-shadow(0 26px 28px #07050e87)}
+.final-paper-heart{position:absolute;top:49%;left:45%;font:75px/1 var(--script);color:#9e5873;opacity:.56;transform:rotate(-8deg)}
+.letter-display-content{padding:16px 0;color:#ffebee}
+.letter-display-kicker{color:#f3bdd7}
+.letter-display-content h3{color:#ffe0e9;font-size:clamp(40px,5vw,60px);text-shadow:0 3px 8px #200d26}
+.letter-display-content p{color:#f5d3e4;font:italic 15px/1.9 var(--serif)}
+/* The concept uses a lighter, taller mobile chapter ribbon, not compressed desktop blocks. */
+@keyframes floatArt{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(1deg)}}
+@media(max-width:850px){
+ .reasons-section{display:block;min-height:0;padding:62px 0 85px}
+ .reasons-section .section-top{width:min(660px,calc(100% - 50px));text-align:center;padding:90px 0 5px;margin:auto}
+ .reasons-section .section-top .image-title img{margin:auto}
+ .reasons-section .section-top .section-description{margin:8px auto}
+ .reasons-section .constellation-wrap{width:min(630px,calc(100% - 32px));margin:30px auto}
+ .reasons-section .section-after-note{margin:20px auto 0}
+ .illustrated-banner{gap:18px;min-height:270px}
+ .gifts-grid{gap:5px}
+ .gift-card img{height:170px}
+ .gift-card{min-height:270px}
+ .letter-card img{height:165px}
+ .letter-card .letter-when{font-size:23px}
+}
+@media(max-width:700px){
+ .story-section,.surprises-section,.letters-section{padding-top:12px;padding-bottom:75px}
+ .story-section::before,.reasons-section::before,.surprises-section::before,.letters-section::after,.final-section::before{top:-67px;height:105px}
+ .illustrated-banner,.surprises-section .surprises-banner,.letters-section .letters-banner{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:215px;padding-top:20px!important}
+ .illustrated-banner .chapter-copy{padding:9px 0}
+ .illustrated-banner .eyebrow{font-size:8px;letter-spacing:1.6px}
+ .illustrated-banner .image-title img{width:100%}
+ .illustrated-banner .section-description{font-size:11px;line-height:1.7}
+ .banner-handwriting{font-size:19px;margin-top:9px;line-height:1.18}
+ .chapter-art{min-height:205px}
+ .story-photo-art{width:100%}
+ .story-blossoms,.surprise-blossoms,.letters-blossoms{width:100px}
+ .story-section::after,.surprises-section::after,.letters-section::before{width:190px;height:95px}
+ .story-roadmap{padding-top:30px;gap:31px 13px}
+ .memory-card{border-width:6px;border-bottom-width:13px;padding-bottom:5px}
+ .memory-photo{height:130px}
+ .story-footer{margin-top:55px;font-size:14px}
+ .reasons-section{padding-bottom:70px}
+ .reasons-section .section-top{padding-top:73px}
+ .surprise-art{min-height:210px;grid-row:1;grid-column:1}
+ .surprises-banner .chapter-copy{grid-row:1;grid-column:2}
+ .gift-feature{width:100%}
+ .gifts-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:10px;max-width:100%}
+ .gift-card,.gift-card:nth-child(2),.gift-card:nth-child(3){min-height:205px;grid-column:auto;width:100%;transform:none;padding:10px 2px}
+ .gift-card img{height:104px;width:100%}
+ .gift-card .gift-title{font-size:12px;line-height:1.2;min-height:36px}
+ .gift-card .gift-no{font-size:8px}
+ .gift-card .gift-action{font-size:8px;line-height:1.4;padding:4px 2px}
+ .unwrapped-caption{font-size:12px;padding:0 16px;margin:12px auto 0}
+ .letters-section .letters-banner{padding-top:15px!important}
+ .letters-art{min-height:210px}
+ .letter-feature{width:85%;transform:rotate(-10deg)}
+ .letter-feature-secondary{width:62%;right:-12px}
+ .letters-grid{margin-top:8px;gap:10px}
+ .letter-card{min-height:210px;padding:8px 3px}
+ .letter-card img{height:118px;width:100%}
+ .letter-card .letter-when{font-size:21px;line-height:1.3}
+ .letter-card .letter-detail{font-size:7px;line-height:1.2}
+ .letter-card .letter-tap{font-size:8px}
+ .letters-bottom-note{margin-top:11px}
+ .final-section{padding:72px 0 80px}
+ .letter-display{max-width:420px;grid-template-columns:1fr;padding:0 12px 18px}
+ .final-paper-art{min-height:0;height:260px}
+ .final-paper-art img{max-height:260px;width:auto}
+ .final-paper-heart{top:50%;left:49%;font-size:55px}
+ .letter-display-content{padding:0 10px;text-align:center}
+ .letter-display-content h3{font-size:40px;margin:6px 0 4px}
+ .letter-display-content p{font-size:13px}
+}
+@media(max-width:390px){.illustrated-banner .eyebrow{font-size:7px}.illustrated-banner .section-description{font-size:10px}.memory-photo{height:108px}.letter-card img{height:98px}.letter-card .letter-when{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.chapter-art img,.gift-feature{animation:none!important}}
+/* Keep overhanging decorative blossoms from expanding the page viewport. */
+html,body{overflow-x:clip}
+.story-section,.surprises-section,.letters-section{clip-path:inset(-145px 0 0 0)}
+
+/* Sample scenic photos live behind the *transparent* Polaroid glass.
+   Replaced automatically with photos from config.js when supplied. */
+.story-art{isolation:isolate}
+.story-photo-art{z-index:2}
+.photo-memory-preview{position:absolute;z-index:1;overflow:hidden;box-shadow:inset 0 0 8px #fff}
+.photo-memory-preview img{width:100%;height:100%;object-fit:cover;filter:saturate(.95);transform:scale(1.17)}
+.photo-memory-preview--first{left:20%;top:20%;width:35%;height:45%;transform:rotate(-8deg)}
+.photo-memory-preview--second{left:58%;top:25%;width:22%;height:43%;transform:rotate(9deg)}
+@media(max-width:700px){.photo-memory-preview--first{left:19%;top:22%;width:35%;height:42%}.photo-memory-preview--second{left:59%;top:26%;width:22%;height:39%}}
