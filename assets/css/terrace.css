@@ -1,6 +1,7 @@
 .terrace{position:absolute;inset:0;z-index:1}
 .terrace::after{content:"";position:absolute;inset:55% 0 0;pointer-events:none;background:linear-gradient(transparent,#12131be6)}
-.terrace canvas{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab}
+.terrace canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.terrace canvas:focus-visible{outline:2px solid #f3dfba;outline-offset:-4px}
 .terrace canvas:active{cursor:grabbing}
 .terrace-ready .hero{height:100svh;min-height:760px;max-height:1100px;background:#191c2b}
 .terrace-ready .hero-image,.terrace-ready .hero-overlay,.terrace-ready .hero-stars,.terrace-ready .moon-secret,.terrace-ready .hero-bottom,.terrace-ready .hero .seamless-edge{display:none!important}

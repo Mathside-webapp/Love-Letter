@@ -4,7 +4,11 @@ The homepage progressively enhances the existing illustrated hero with a real-ti
 Three.js scene. `assets/js/terrace.js` builds the architecture, lighting, furniture,
 framed memories, and writing table. `assets/css/terrace.css` styles its HTML controls.
 
-Four buttons select camera positions; horizontal dragging adjusts the view.
+Four buttons select camera positions. OrbitControls provides unrestricted
+horizontal orbit, vertical orbit, wheel/pinch zoom, and right-drag/two-finger
+pan. The focusable canvas also supports arrow-key pan, +/- zoom, and R to reset.
+Preset buttons restore a familiar view after exploring; scrolling outside the
+canvas continues through the page. Camera rendering still runs only on demand.
 The terrace chapter links open Our stories, Reasons, Surprises, Letters, and
 For you. The framed photos, hanging stars, gift boxes, envelope, and floral
 paper also navigate to their corresponding HTML sections when selected.
@@ -33,6 +37,11 @@ fringed rug, wrapping-paper texture, a lacquer-and-brass pen, gallery wainscotin
 and pergola braces and fittings. A shaded ceramic-and-brass table lamp lights
 the writing desk. Candle lanterns hang from roof chains instead of sitting on
 the floor. These details are built in Three.js alongside the Blender props.
+
+`assets/js/terrace-garden.js` adds a seeded garden around every side: textured
+terrain, stone steps and a winding path, rocks, lavender, branching trees with
+bark, and individual grass blades. Grass, leaves and flowers use instancing to
+keep draw calls bounded. Canvas-generated textures are original project work.
 
 ## Blender assets
 

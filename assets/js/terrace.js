@@ -1,6 +1,8 @@
 import * as THREE from '../vendor/three/three.module.min.js';
 import { GLTFLoader } from '../vendor/three/loaders/GLTFLoader.js';
 import { RoundedBoxGeometry } from '../vendor/three/geometries/RoundedBoxGeometry.js';
+import { OrbitControls } from '../vendor/three/controls/OrbitControls.js';
+import { createGarden } from './terrace-garden.js';
 
 // A real, locally served WebGL scene. Existing HTML remains the fallback.
 const host = document.querySelector('#terrace');
@@ -17,15 +19,20 @@ function initialize() {
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // Geometry and lights are static: camera movement can reuse shadow maps.
+  renderer.shadowMap.autoUpdate = false;
+  renderer.shadowMap.needsUpdate = true;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.1;
   host.append(renderer.domElement);
-  renderer.domElement.setAttribute('aria-hidden','true');
+  renderer.domElement.tabIndex=0;
+  renderer.domElement.setAttribute('aria-label','Explore the terrace. Drag to orbit, scroll to zoom, right drag or arrow keys to pan. Plus and minus zoom. R resets the view.');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#1c2439');
   scene.fog = new THREE.FogExp2('#1c2439', .018);
-  const camera = new THREE.PerspectiveCamera(48,1,.1,150);
+  const camera = new THREE.PerspectiveCamera(48,1,.05,300);
   const world = new THREE.Group(); scene.add(world);
+  createGarden(world);
   const mat = (color, roughness=.7, metalness=0) => new THREE.MeshStandardMaterial({color,roughness,metalness});
   const stone=mat('#ad9c87'), dark=mat('#342a27'), brass=mat('#b99a59',.28,.7), wood=mat('#76523b'), linen=mat('#e1c9b5'), rose=mat('#a96272');
   function mesh(geometry,material,x,y,z,parent=world){
@@ -106,6 +113,13 @@ function initialize() {
   box(1.35,.20,1.35,wood,-1.95,.62,.8);box(1.14,.25,1.15,linen,-1.95,.83,.8);
   const chairBack=box(1.2,.9,.25,rose,-1.95,1.3,1.35);chairBack.rotation.x=.12;
   for(const x of [-2.58,-1.32])box(.12,.13,1.4,wood,x,1.05,.8);
+  for(const z of [.27,1.33])box(1.06,.014,.014,linen,-1.95,.95,z);
+  for(const x of [-2.48,-1.42])box(.014,.014,1.06,linen,x,.95,.8);
+  // Recessed fasteners and seams give the joinery a visible construction.
+  for(const x of [.85,5.15,-2.58,-1.32])for(const z of (x>0?[-3.35,-2.25]:[.25,1.35])){
+    const screw=cylinder(.024,.007,brass,x,x>0?1.205:1.12,z);
+    box(.028,.003,.004,dark,screw.position.x,screw.position.y+.005,z);
+  }
   // Woven rug and writing table.
   const rug=mat('#96846d');rug.map=weaveMap;rug.bumpMap=weaveMap;rug.bumpScale=.025;
   box(5,.025,3.4,rug,1,.015,.1);
@@ -159,13 +173,17 @@ function initialize() {
   cylinder(.07,.35,brass,.25,1.36,-.55);
   const ceramic=mat('#9c7c69',.42);ceramic.map=grain('#d2bd9f');ceramic.bumpMap=ceramic.map;ceramic.bumpScale=.015;
   const lampBody=mesh(new THREE.SphereGeometry(.16,32,20),ceramic,.25,1.36,-.55);lampBody.scale.y=1.15;
+  for(let i=0;i<24;i++){
+    const a=i/24*Math.PI*2;
+    const flute=mesh(new THREE.SphereGeometry(.015,6,12),ceramic,.25+Math.cos(a)*.145,1.36,-.55+Math.sin(a)*.145);flute.scale.y=8;
+  }
   const shadeMat=linen.clone();shadeMat.side=THREE.DoubleSide;shadeMat.emissive=new THREE.Color('#a46f37');shadeMat.emissiveIntensity=.18;
   mesh(new THREE.CylinderGeometry(.19,.34,.38,64,1,true),shadeMat,.25,1.78,-.55);
   for(const [y,r] of [[1.59,.34],[1.97,.19]]){const rim=mesh(new THREE.TorusGeometry(r,.01,8,64),linen,.25,y,-.55);rim.rotation.x=Math.PI/2}
   mesh(new THREE.SphereGeometry(.055,16,12),new THREE.MeshBasicMaterial({color:'#ffe5ae'}),.25,1.7,-.55);
   const lampLight=new THREE.PointLight('#ffcb89',5,5,2);lampLight.position.set(.25,1.65,-.55);scene.add(lampLight);
   const assets=new GLTFLoader();let modelsLoaded=0;
-  function prepareModel(root){root.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;const materials=Array.isArray(o.material)?o.material:[o.material];for(const m of materials){if(m.name.includes('Leaf')){m.side=THREE.DoubleSide;m.roughness=.75}if(m.name.includes('terracotta')){m.map=grain('#caa98c');m.bumpMap=m.map;m.bumpScale=.025}if(m.name.includes('glass')){m.depthWrite=false;o.castShadow=false}}})}
+  function prepareModel(root){renderer.shadowMap.needsUpdate=true;root.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;const materials=Array.isArray(o.material)?o.material:[o.material];for(const m of materials){if(m.name.includes('Leaf')){m.side=THREE.DoubleSide;m.roughness=.75}if(m.name.includes('terracotta')){m.map=grain('#caa98c');m.bumpMap=m.map;m.bumpScale=.025}if(m.name.includes('glass')){m.depthWrite=false;o.castShadow=false}}})}
   assets.load('assets/models/terrace-fern.glb',gltf=>{prepareModel(gltf.scene);for(const [x,z] of [[-5.6,-3.6],[5.6,-3.6],[5.6,3.4]]){const plant=gltf.scene.clone();plant.position.set(x,0,z);world.add(plant)}host.dataset.models=String(++modelsLoaded);requestRender()},undefined,()=>console.warn('Plant model could not load.'));
   assets.load('assets/models/terrace-lantern.glb',gltf=>{prepareModel(gltf.scene);for(const [x,y,z] of [[5,3.1,-1],[-5,3.1,-3]]){const lantern=gltf.scene.clone();lantern.position.set(x,y,z);world.add(lantern)}fallbackProps.visible=false;host.dataset.models=String(++modelsLoaded);requestRender()},undefined,()=>console.warn('Using simplified lanterns.'));
   // Gifts and letters have physical places on a side console.
@@ -218,28 +236,36 @@ function initialize() {
     {p:[2.2,3.1,2.5],t:[.95,1.14,.15],label:'A letter, just for you.'},
     {p:[12,16,15],t:[0,0,0],label:'Our own little corner of the world.'}
   ];
-  let view=0, dragging=false, previousX=0, yaw=0, frame=0, visible=true;
-  const target=new THREE.Vector3(),destination=new THREE.Vector3(),look=new THREE.Vector3();
-  function setDestination(){const v=views[view];destination.fromArray(v.p);target.fromArray(v.t);if(innerWidth<700){destination.sub(target).multiplyScalar(1.35).add(target)}const offset=destination.clone().sub(target).applyAxisAngle(new THREE.Vector3(0,1,0),yaw);destination.copy(target).add(offset)}
-  function choose(index){view=index;yaw=0;setDestination();document.querySelectorAll('[data-view]').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===view)));document.querySelector('#terraceStatus').textContent=views[view].label;document.querySelector('#terraceLetter').hidden=view!==2;document.querySelector('.hero-content').classList.toggle('scene-detail',view!==0);if(reduced.matches){camera.position.copy(destination);look.copy(target)}requestRender()}
+  let view=0, dragging=false, frame=0, visible=true, transitioning=false;
+  const target=new THREE.Vector3(),destination=new THREE.Vector3();
+  const controls=new OrbitControls(camera,renderer.domElement);
+  controls.minDistance=.35;controls.maxDistance=100;controls.maxPolarAngle=Math.PI-.01;
+  controls.enableDamping=false;controls.zoomSpeed=.8;controls.panSpeed=.8;
+  controls.listenToKeyEvents(renderer.domElement);
+  controls.addEventListener('change',requestRender);
+  controls.addEventListener('start',()=>{transitioning=false;document.querySelector('.hero-content').classList.add('scene-detail');document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed','false'));document.querySelector('#terraceStatus').textContent='Explore at your own pace. Choose a view to return.'});
+  function setDestination(){const v=views[view];destination.fromArray(v.p);target.fromArray(v.t);if(innerWidth<700){destination.sub(target).multiplyScalar(1.35).add(target)}}
+  function choose(index){view=index;setDestination();transitioning=true;document.querySelectorAll('[data-view]').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===view)));document.querySelector('#terraceStatus').textContent=views[view].label;document.querySelector('#terraceLetter').hidden=view!==2;document.querySelector('.hero-content').classList.toggle('scene-detail',view!==0);if(reduced.matches){camera.position.copy(destination);controls.target.copy(target);controls.update();transitioning=false}requestRender()}
+  renderer.domElement.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='r'){e.preventDefault();choose(0)}if(['+','=','-'].includes(e.key)){e.preventDefault();transitioning=false;camera.position.sub(controls.target).multiplyScalar(e.key==='-'?1.15:.87).clampLength(.35,100).add(controls.target);controls.update();requestRender()}});
   document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.view))));
   document.querySelector('#terraceLetter').addEventListener('click',()=>document.querySelector('#openFinalLetter').click());
   const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let startX=0,startY=0;
   function pick(e){const r=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(pointer,camera);return raycaster.intersectObjects(clickable,false)[0]?.object.userData.panel}
   function openChapter(panel){const section=document.getElementById(panel);if(!section)return;location.hash=panel;section.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});section.setAttribute('tabindex','-1');section.focus({preventScroll:true})}
   document.querySelectorAll('.terrace-chapters a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();openChapter(a.hash.slice(1))}));
-  renderer.domElement.addEventListener('pointerdown',e=>{dragging=true;previousX=startX=e.clientX;startY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)});
-  renderer.domElement.addEventListener('pointerup',e=>{if(Math.hypot(e.clientX-startX,e.clientY-startY)<6){const panel=pick(e);if(panel)openChapter(panel)}});
+  let moved=false,pointerCount=0;
+  renderer.domElement.addEventListener('pointerdown',e=>{pointerCount++;moved=pointerCount>1;dragging=true;startX=e.clientX;startY=e.clientY});
+  renderer.domElement.addEventListener('pointerup',e=>{if(!moved&&pointerCount===1&&e.button===0&&Math.hypot(e.clientX-startX,e.clientY-startY)<6){const panel=pick(e);if(panel)openChapter(panel)}pointerCount=Math.max(0,pointerCount-1)});
   renderer.domElement.addEventListener('pointermove',e=>{if(dragging)return;const panel=pick(e);renderer.domElement.style.cursor=panel?'pointer':'grab';document.querySelectorAll('.terrace-chapters a').forEach(a=>a.classList.toggle('scene-hover',a.hash==='#'+panel))});
-  renderer.domElement.addEventListener('pointermove',e=>{if(!dragging)return;yaw=THREE.MathUtils.clamp(yaw+(e.clientX-previousX)*.004,-.7,.7);previousX=e.clientX;setDestination();requestRender()});
-  for(const event of ['pointerup','pointercancel'])renderer.domElement.addEventListener(event,()=>dragging=false);
-  function resize(){const {width,height}=host.getBoundingClientRect();renderer.setSize(width,height);camera.aspect=width/height;camera.updateProjectionMatrix();setDestination();requestRender()}
-  function render(){frame=0;if(!visible||document.hidden)return;camera.position.lerp(destination,reduced.matches?1:.065);look.lerp(target,reduced.matches?1:.065);camera.lookAt(look);renderer.render(scene,camera);if(camera.position.distanceTo(destination)>.005||look.distanceTo(target)>.005)requestRender()}
+  renderer.domElement.addEventListener('pointermove',e=>{if(dragging&&Math.hypot(e.clientX-startX,e.clientY-startY)>6)moved=true});
+  for(const event of ['pointerup','pointercancel'])renderer.domElement.addEventListener(event,()=>{dragging=false;if(event==='pointercancel'){moved=true;pointerCount=0}});
+  function resize(){const {width,height}=host.getBoundingClientRect();renderer.setSize(width,height);camera.aspect=width/height;camera.updateProjectionMatrix();requestRender()}
+  function render(){frame=0;if(!visible||document.hidden)return;if(transitioning){camera.position.lerp(destination,.09);controls.target.lerp(target,.09);controls.update();if(camera.position.distanceTo(destination)<.005&&controls.target.distanceTo(target)<.005)transitioning=false;else requestRender()}renderer.render(scene,camera)}
   function requestRender(){if(!frame)frame=requestAnimationFrame(render)}
   new ResizeObserver(resize).observe(host);
   new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible)requestRender()}).observe(host);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)requestRender()});
   renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();document.documentElement.classList.remove('terrace-ready');document.querySelector('.terrace-tools').hidden=true;host.hidden=true});
   document.documentElement.classList.add('terrace-ready');document.querySelector('.terrace-tools').hidden=false;
-  setDestination();camera.position.copy(destination);look.copy(target);resize();
+  setDestination();camera.position.copy(destination);controls.target.copy(target);controls.update();resize();
 }
