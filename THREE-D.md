@@ -4,7 +4,7 @@ The homepage progressively enhances the existing illustrated hero with a real-ti
 Three.js scene. `assets/js/terrace.js` builds the architecture, lighting, furniture,
 framed memories, and writing table. `assets/css/terrace.css` styles its HTML controls.
 
-Five buttons select camera positions, including Night sky. OrbitControls provides unrestricted
+Three buttons select the terrace, gallery and writing-table views. OrbitControls provides unrestricted
 horizontal orbit, vertical orbit, wheel/pinch zoom, and right-drag/two-finger
 pan. The focusable canvas also supports arrow-key pan, +/- zoom, and R to reset.
 Preset buttons restore a familiar view after exploring; scrolling outside the
@@ -23,8 +23,7 @@ There is no build step or runtime CDN requirement. Serve the repository with
 
 Ambient motion schedules renders at up to 15 fps; camera interaction can render
 more frequently. Rendering pauses when offscreen or the document is hidden.
-The Scene motion toggle freezes wind, clouds and twinkling and hides shooting
-stars; reduced-motion preferences disable ambient motion and make view changes
+Reduced-motion preferences disable ambient motion and make view changes
 immediate. Pixel density is capped at 1.6. Without WebGL, or after context loss, the existing
 illustrated hero and all normal website controls remain usable.
 
@@ -50,12 +49,17 @@ The fuller garden has 7,168 curved leaves per tree and 44 blades per grass
 clump, with 2,700 clumps placed around the terrace. Vertex shaders bend grass
 from its roots and add low-amplitude canopy sway and leaf flutter.
 
-`assets/js/terrace-sky.js` provides a continuous sky gradient, an alpine ring
-with rock relief and snow coloration, a textured moon, eleven translucent
+`assets/js/terrace-sky.js` provides an open sky without mountains,
+a textured moon, eleven translucent
 cloud banks, and 1,900 stars that twinkle independently. A fading shooting star
 crosses the sky for 1.35 seconds once per 24 seconds of active scene time.
 Rebuild the original sky textures with `python3 tools/blender/sky_textures.py`.
 The lunar map is artist-authored procedural detail, not an astronomical scan.
+
+The refined terrace has softer moonlight and warm fill, a flatter garden horizon,
+denser grass near the terrace, a compact control bar with 44px tap targets,
+and a wider mobile establishing view. Overhead, sky-view and motion buttons
+have been removed. The lamp toggle and all chapter links remain available.
 
 Click the table lamp or activate the Table lamp toggle button to switch its
 point light, shade emission and bulb appearance. Dragging the camera does not

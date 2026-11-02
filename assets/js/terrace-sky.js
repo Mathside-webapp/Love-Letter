@@ -11,37 +11,14 @@ export function createAtmosphere(scene,onLoad) {
     vertexShader:'varying vec3 direction; void main(){direction=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
     fragmentShader:`varying vec3 direction;
       void main(){float h=normalize(direction).y;
-        vec3 horizon=vec3(.068,.092,.145),zenith=vec3(.006,.012,.034);
+        vec3 horizon=vec3(.012,.018,.038),zenith=vec3(.003,.007,.023);
         vec3 c=mix(horizon,zenith,pow(clamp(h,0.,1.),.42));
-        c+=vec3(.015,.008,.012)*exp(-pow((h-.03)*7.,2.));
+        c+=vec3(.003,.002,.003)*exp(-pow((h-.03)*7.,2.));
         gl_FragColor=vec4(c,1.);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }`
   }));sky.name='Atmospheric night sky';sky.renderOrder=-10;scene.add(sky);
-
-  // Multiple spatial frequencies form eroded ridges, gullies and broken peaks.
-  const hash=(x,z)=>{const n=Math.sin(x*127.1+z*311.7)*43758.5453;return n-Math.floor(n)};
-  function noise(x,z){const ix=Math.floor(x),iz=Math.floor(z);let u=x-ix,v=z-iz;u=u*u*(3-2*u);v=v*v*(3-2*v);return THREE.MathUtils.lerp(THREE.MathUtils.lerp(hash(ix,iz),hash(ix+1,iz),u),THREE.MathUtils.lerp(hash(ix,iz+1),hash(ix+1,iz+1),u),v)}
-  function fbm(x,z){return noise(x,z)*.55+noise(x*2.13,z*2.13)*.26+noise(x*4.7,z*4.7)*.13+noise(x*9.1,z*9.1)*.06}
-  const vertices=[],uvs=[],indices=[],segments=512,rings=100;
-  for(let j=0;j<=rings;j++)for(let i=0;i<=segments;i++){
-    const a=i/segments*Math.PI*2,r=48+j/rings*112,x=Math.cos(a)*r,z=Math.sin(a)*r;
-    const envelope=Math.sin(j/rings*Math.PI)**1.4;
-    const ridge=1-Math.abs(fbm(x*.065,z*.065)*2-1);
-    const h=-1+envelope*(8+ridge*26+fbm(x*.13+40,z*.13)*9+noise(x*.7,z*.7)*1.4);
-    vertices.push(x,h,z);uvs.push(x*.045,z*.045);
-    if(j<rings&&i<segments){const n=j*(segments+1)+i;indices.push(n,n+1,n+segments+1,n+1,n+segments+2,n+segments+1)}
-  }
-  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geo.setIndex(indices);geo.computeVertexNormals();
-  const colors=[],normals=geo.attributes.normal;
-  for(let i=0;i<vertices.length/3;i++){
-    const h=vertices[i*3+1],snow=THREE.MathUtils.smoothstep(h+noise(vertices[i*3]*.4,vertices[i*3+2]*.4)*6,29,37)*THREE.MathUtils.smoothstep(normals.getY(i),.35,.85);
-    const c=new THREE.Color('#727c89').lerp(new THREE.Color('#d8e1ed'),snow);colors.push(c.r,c.g,c.b);
-  }
-  geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
-  const rock=texture('mountain-rock'),height=texture('mountain-height',false);for(const t of [rock,height]){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=4}
-  const mountains=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({map:rock,bumpMap:height,bumpScale:.45,vertexColors:true,roughness:1,side:THREE.DoubleSide}));mountains.name='Eroded alpine ridges';scene.add(mountains);
 
   // Original crater/maria texture, with physical relief and a soft phase edge.
   const moonMap=texture('moon-albedo'),moonHeight=texture('moon-height',false);
@@ -87,5 +64,5 @@ export function createAtmosphere(scene,onLoad) {
     if(meteor.visible){meteor.position.set(-35+phase*24,58-phase*12,-108);const opacity=Math.sin(phase/1.35*Math.PI);tail.material.opacity=opacity;head.material.opacity=opacity}
   }
   update(0,false);
-  return {update,meteor,clouds,mountains,moon,stars};
+  return {update,meteor,clouds,moon,stars};
 }

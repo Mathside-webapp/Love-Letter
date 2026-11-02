@@ -2,8 +2,8 @@ import * as THREE from '../vendor/three/three.module.min.js';
 import { GLTFLoader } from '../vendor/three/loaders/GLTFLoader.js';
 import { RoundedBoxGeometry } from '../vendor/three/geometries/RoundedBoxGeometry.js';
 import { OrbitControls } from '../vendor/three/controls/OrbitControls.js';
-import { createGarden } from './terrace-garden.js?v=3-fuller';
-import { createAtmosphere } from './terrace-sky.js';
+import { createGarden } from './terrace-garden.js?v=4-refined';
+import { createAtmosphere } from './terrace-sky.js?v=2-open-sky';
 
 // A real, locally served WebGL scene. Existing HTML remains the fallback.
 const host = document.querySelector('#terrace');
@@ -30,7 +30,7 @@ function initialize() {
   renderer.domElement.setAttribute('aria-label','Explore the terrace. Drag to orbit, scroll to zoom, right drag or arrow keys to pan. Plus and minus zoom. R resets the view.');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#1c2439');
-  scene.fog = new THREE.FogExp2('#1c2439', .009);
+  scene.fog = new THREE.FogExp2('#1c2439', .013);
   const camera = new THREE.PerspectiveCamera(48,1,.05,400);
   const world = new THREE.Group(); scene.add(world);
   const garden=createGarden(world,()=>{renderer.shadowMap.needsUpdate=true;requestRender()});
@@ -41,13 +41,13 @@ function initialize() {
   }
   const box=(w,h,d,m,x,y,z,parent)=>mesh(new RoundedBoxGeometry(w,h,d,2,Math.min(w,h,d)*.12),m,x,y,z,parent);
   const cylinder=(r,h,m,x,y,z,parent)=>mesh(new THREE.CylinderGeometry(r,r,h,32),m,x,y,z,parent);
-  scene.add(new THREE.HemisphereLight('#b7cbff','#64503d',.9));
-  const moonlight=new THREE.DirectionalLight('#c2d4ff',3);moonlight.position.set(-9,14,-6);scene.add(moonlight);
+  scene.add(new THREE.HemisphereLight('#b7cbff','#64503d',1.15));
+  const moonlight=new THREE.DirectionalLight('#c2d4ff',1.6);moonlight.position.set(-9,14,-6);scene.add(moonlight);
   moonlight.castShadow=true;moonlight.shadow.mapSize.set(2048,2048);
   Object.assign(moonlight.shadow.camera,{left:-11,right:11,top:11,bottom:-11,near:.5,far:45});
   moonlight.shadow.bias=-.0003;moonlight.shadow.normalBias=.025;
   moonlight.shadow.radius=3;
-  const warm=new THREE.SpotLight('#ffd59c',110,30,Math.PI/3,.6,1.5);warm.position.set(2,7,3);warm.target.position.set(0,0,0);warm.castShadow=true;warm.shadow.mapSize.set(1024,1024);warm.shadow.bias=-.0002;scene.add(warm,warm.target);
+  const warm=new THREE.SpotLight('#ffd59c',65,30,Math.PI/3,.8,1.5);warm.position.set(2,7,3);warm.target.position.set(0,0,0);warm.castShadow=true;warm.shadow.mapSize.set(1024,1024);warm.shadow.bias=-.0002;scene.add(warm,warm.target);
   // Subtle material grain catches the light without a texture download.
   function grain(base,woodgrain=false){
     const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
@@ -144,7 +144,7 @@ function initialize() {
   paperImage.onload=()=>{
     const canvas=document.createElement('canvas');canvas.width=768;canvas.height=820;
     const ctx=canvas.getContext('2d');ctx.drawImage(paperImage,56,0,paperImage.width-56,paperImage.height,0,0,768,820);
-    const data=window.LOVE_SITE_DATA||{};ctx.textAlign='center';ctx.fillStyle='#87576b';
+    const data=window.LOVE_SITE_DATA||{};ctx.textAlign='center';ctx.fillStyle='#61374a';
     ctx.font='italic 40px Georgia';ctx.fillText((data.finalLetter?.[0]||'My dearest Babi,').slice(0,45),384,320,560);
     ctx.font='italic 25px Georgia';const words=(data.finalLetter?.[1]||'Every little moment with you means the world to me.').split(/\s+/);
     let line='',row=0;for(const word of words){const next=line+word+' ';if(ctx.measureText(next).width>510&&line){ctx.fillText(line.trim(),384,390+row*38);row++;line='';if(row===3)break}line+=word+' '}
@@ -232,17 +232,11 @@ function initialize() {
   const views=[
     {p:[10,7,12],t:[0,1,0],label:'A place for just the two of us.'},
     {p:[.3,3.3,5],t:[-5.7,2.2,-.1],label:'Our stories — select a framed photo to read them.'},
-    {p:[.95,3.7,2.45],t:[.95,1.14,.4],label:'A letter, just for you.'},
-    {p:[12,16,15],t:[0,0,0],label:'Our own little corner of the world.'},
-    {p:[3,7,13],t:[-28,46,-100],label:'Under the same moon. A shooting star, now and then.'}
+    {p:[.95,3.7,2.45],t:[.95,1.14,.4],label:'A letter, just for you.'}
   ];
   let view=0, dragging=false, frame=0, visible=true, transitioning=false;
   let skyMotion=!reduced.matches,skySeconds=0,lastSkyFrame=performance.now(),skyTimer=0;
-  const motionButton=document.querySelector('#terraceMotion');
-  function updateMotion(){motionButton.setAttribute('aria-pressed',String(skyMotion));motionButton.disabled=reduced.matches;motionButton.textContent=reduced.matches?'Motion: reduced':'Scene motion';lastSkyFrame=performance.now();clearTimeout(skyTimer);requestRender()}
-  motionButton.addEventListener('click',()=>{skyMotion=!skyMotion;updateMotion()});
-  reduced.addEventListener('change',()=>{skyMotion=!reduced.matches;updateMotion()});
-  updateMotion();
+  reduced.addEventListener('change',()=>{skyMotion=!reduced.matches;lastSkyFrame=performance.now();clearTimeout(skyTimer);requestRender()});
   const target=new THREE.Vector3(),destination=new THREE.Vector3();
   const controls=new OrbitControls(camera,renderer.domElement);
   controls.minDistance=.35;controls.maxDistance=100;controls.maxPolarAngle=Math.PI-.01;
@@ -250,7 +244,7 @@ function initialize() {
   controls.listenToKeyEvents(renderer.domElement);
   controls.addEventListener('change',requestRender);
   controls.addEventListener('start',()=>{transitioning=false;document.querySelector('.hero-content').classList.add('scene-detail');document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed','false'));document.querySelector('#terraceStatus').textContent='Explore at your own pace. Choose a view to return.'});
-  function setDestination(){const v=views[view];destination.fromArray(v.p);target.fromArray(v.t);if(innerWidth<700){destination.sub(target).multiplyScalar(1.35).add(target)}}
+  function setDestination(){const v=views[view];destination.fromArray(v.p);target.fromArray(v.t);if(innerWidth<700){const distance=view===0?2.25:1.35;destination.sub(target).multiplyScalar(distance).add(target)}}
   function choose(index){view=index;setDestination();transitioning=true;document.querySelectorAll('[data-view]').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===view)));document.querySelector('#terraceStatus').textContent=views[view].label;document.querySelector('#terraceLetter').hidden=view!==2;document.querySelector('.hero-content').classList.toggle('scene-detail',view!==0);if(reduced.matches){camera.position.copy(destination);controls.target.copy(target);controls.update();transitioning=false}requestRender()}
   renderer.domElement.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='r'){e.preventDefault();choose(0)}if(['+','=','-'].includes(e.key)){e.preventDefault();transitioning=false;camera.position.sub(controls.target).multiplyScalar(e.key==='-'?1.15:.87).clampLength(.35,100).add(controls.target);controls.update();requestRender()}});
   document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.view))));

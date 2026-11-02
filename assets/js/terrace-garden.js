@@ -13,10 +13,10 @@ export function createGarden(world, onLoad) {
     for(const t of [map,height]){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(repeat,repeat);t.anisotropy=4}
     return new THREE.MeshStandardMaterial({map,bumpMap:height,bumpScale:bump,roughness:.96});
   }
-  const earth=material('meadow',40,.025),stone=material('weathered-rock',1,.045);
+  const earth=material('meadow',112,.025),stone=material('weathered-rock',1,.045);
   function add(g,m,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.receiveShadow=true;o.castShadow=true;world.add(o);return o}
-  function elevation(x,z){const edge=THREE.MathUtils.smoothstep(Math.hypot(x,z),15,65);return -.52+edge*(2.5+Math.sin(x*.12)*2+Math.cos(z*.16)*1.6)}
-  const terrain=new THREE.PlaneGeometry(180,180,140,140),pos=terrain.attributes.position;
+  function elevation(x,z){const edge=THREE.MathUtils.smoothstep(Math.hypot(x,z),15,65);return -.52+edge*(.3+Math.sin(x*.12)*.28+Math.cos(z*.16)*.2)}
+  const terrain=new THREE.PlaneGeometry(500,500,160,160),pos=terrain.attributes.position;
   for(let i=0;i<pos.count;i++)pos.setZ(i,elevation(pos.getX(i),-pos.getY(i)));
   terrain.computeVertexNormals();const ground=add(terrain,earth,0,0,0);ground.rotation.x=-Math.PI/2;ground.castShadow=false;
   for(let i=0;i<23;i++){
@@ -34,7 +34,7 @@ export function createGarden(world, onLoad) {
     for(const [cx,cz] of [[-9,-5],[10,-6],[-12,10],[15,5]])for(let i=0;i<3;i++)placements[`rock-${v}`].push({x:cx+(random()-.5)*3,z:cz+(random()-.5)*2,s:.2+random()*.65,angle:random()*6,buried:.12});
     placements[`grass-${v}`]=[];
     for(let i=0;i<900;i++){
-      let x,z;do{x=(random()-.5)*43;z=(random()-.5)*43}while((Math.abs(x)<7.4&&Math.abs(z)<5.7)||(z>5&&z<28&&Math.abs(x-Math.sin((z-5.8)/.92*.24)*2.3)<1.15));
+      let x,z;do{x=(random()-.5)*34;z=(random()-.5)*34}while((Math.abs(x)<7.4&&Math.abs(z)<5.7)||(z>5&&z<28&&Math.abs(x-Math.sin((z-5.8)/.92*.24)*2.3)<1.15));
       placements[`grass-${v}`].push({x,z,s:.45+random()*.65,angle:random()*6});
     }
   }
