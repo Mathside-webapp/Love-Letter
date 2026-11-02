@@ -1,5 +1,6 @@
 import * as THREE from '../vendor/three/three.module.min.js';
 import { GLTFLoader } from '../vendor/three/loaders/GLTFLoader.js';
+import { RoundedBoxGeometry } from '../vendor/three/geometries/RoundedBoxGeometry.js';
 
 // A real, locally served WebGL scene. Existing HTML remains the fallback.
 const host = document.querySelector('#terrace');
@@ -30,7 +31,7 @@ function initialize() {
   function mesh(geometry,material,x,y,z,parent=world){
     const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;
   }
-  const box=(w,h,d,m,x,y,z,parent)=>mesh(new THREE.BoxGeometry(w,h,d),m,x,y,z,parent);
+  const box=(w,h,d,m,x,y,z,parent)=>mesh(new RoundedBoxGeometry(w,h,d,2,Math.min(w,h,d)*.12),m,x,y,z,parent);
   const cylinder=(r,h,m,x,y,z,parent)=>mesh(new THREE.CylinderGeometry(r,r,h,32),m,x,y,z,parent);
   scene.add(new THREE.HemisphereLight('#b7cbff','#64503d',.9));
   const moonlight=new THREE.DirectionalLight('#c2d4ff',3);moonlight.position.set(-9,14,-6);scene.add(moonlight);
@@ -61,6 +62,13 @@ function initialize() {
   wood.color.set('#ffffff');wood.bumpMap=wood.map;wood.bumpScale=.025;wood.roughness=.76;
   linen.map=grain('#eee1d0');linen.bumpMap=linen.map;linen.bumpScale=.018;
   const stoneTexture=grain('#d2c1ad');
+  const weaveCanvas=document.createElement('canvas');weaveCanvas.width=weaveCanvas.height=256;
+  const weave=weaveCanvas.getContext('2d');weave.fillStyle='#c3aa8b';weave.fillRect(0,0,256,256);
+  for(let i=0;i<256;i+=4){weave.fillStyle=i%8?'#a58d72':'#dec6a7';weave.fillRect(i,0,2,256);weave.fillStyle='#ead8bc55';weave.fillRect(0,i,256,2)}
+  const weaveMap=new THREE.CanvasTexture(weaveCanvas);weaveMap.wrapS=weaveMap.wrapT=THREE.RepeatWrapping;weaveMap.repeat.set(5,5);weaveMap.colorSpace=THREE.SRGBColorSpace;
+  linen.map=weaveMap;linen.bumpMap=weaveMap;linen.bumpScale=.012;
+  rose.map=weaveMap;rose.bumpMap=weaveMap;rose.bumpScale=.012;
+  brass.bumpMap=grain('#93846a');brass.bumpScale=.008;
 
   // Limestone terrace with individually jointed slabs.
   box(14,.4,10,stone,0,-.25,0);
@@ -79,17 +87,33 @@ function initialize() {
   for(const x of [-6,6])for(const z of [-4,4])box(.22,5,.22,wood,x,2.5,z);
   for(let x=-6;x<=6;x+=.7)box(.12,.18,8.4,wood,x,5,0);
   for(const z of [-4,4])box(12.5,.28,.25,wood,0,4.85,z);
+  for(const x of [-6,6])for(const z of [-4,4]){
+    box(.26,.32,.26,brass,x,.17,z);
+    for(const y of [.22,4.75]){const bolt=mesh(new THREE.SphereGeometry(.035,10,8),brass,x,y,z+.125);bolt.scale.z=.35}
+    const brace=box(.14,1.15,.14,wood,x+(x<0?.38:-.38),4.35,z);brace.rotation.z=x<0?-.7:.7;
+  }
   // A low sofa, seams and soft cushions.
   box(4,.4,1.5,wood,3,.45,-2.8);box(4,.55,.25,wood,3,1,-3.45);
   for(let i=0;i<3;i++){
     box(1.24,.3,1.28,linen,1.7+i*1.3,.8,-2.7);
     const cushion=box(1.2,.8,.25,i===1?rose:linen,1.7+i*1.3,1.22,-3.18);cushion.rotation.x=-.15;
+    for(const z of [-3.26,-2.14])box(1.17,.012,.012,linen,1.7+i*1.3,.91,z);
+    for(const x of [1.12+i*1.3,2.28+i*1.3])box(.012,.012,1.12,linen,x,.91,-2.7);
   }
   for(const x of [.85,5.15])box(.24,.8,1.6,wood,x,.8,-2.8);
+  // Matching armchair with a timber frame and piped upholstered cushions.
+  for(const x of [-2.5,-1.4])for(const z of [.25,1.35])box(.09,.65,.09,wood,x,.325,z);
+  box(1.35,.20,1.35,wood,-1.95,.62,.8);box(1.14,.25,1.15,linen,-1.95,.83,.8);
+  const chairBack=box(1.2,.9,.25,rose,-1.95,1.3,1.35);chairBack.rotation.x=.12;
+  for(const x of [-2.58,-1.32])box(.12,.13,1.4,wood,x,1.05,.8);
   // Woven rug and writing table.
-  box(5,.025,3.4,mat('#82716c'),1,.015,.1);
-  for(let i=0;i<40;i++)box(4.9,.004,.018,mat(i%2?'#a69484':'#78675e'),1,.032,-1.5+i*.08);
+  const rug=mat('#96846d');rug.map=weaveMap;rug.bumpMap=weaveMap;rug.bumpScale=.025;
+  box(5,.025,3.4,rug,1,.015,.1);
+  for(const z of [-1.54,1.74])box(4.9,.006,.08,linen,1,.031,z);
+  for(let i=0;i<65;i++)for(const z of [-1.67,1.87]){const fringe=box(.015,.012,.2,linen,-1.45+i*.075,.02,z);fringe.rotation.y=Math.sin(i)*.12}
   cylinder(1.35,.16,wood,1,1.05,0);
+  const tableRim=mesh(new THREE.TorusGeometry(1.32,.025,8,96),wood,1,1.115,0);tableRim.rotation.x=Math.PI/2;
+  cylinder(1.29,.025,brass,1,.96,0);
   for(const x of [.2,1.8])for(const z of [-.65,.65])box(.09,1,.09,brass,x,.5,z);
   const clickable=[];
   function chapter(object,panel){object.userData.panel=panel;clickable.push(object);return object}
@@ -108,12 +132,16 @@ function initialize() {
     ctx.font='italic 31px Georgia';ctx.fillText('Always yours ♡',384,565);
     const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());paperMaterial.map=texture;paperMaterial.needsUpdate=true;requestRender();
   };
-  const pen=box(.025,.025,.7,brass,1.6,1.15,.1);pen.rotation.y=-.35;
+  const penGroup=new THREE.Group();penGroup.position.set(1.6,1.155,.1);penGroup.rotation.x=Math.PI/2;penGroup.rotation.z=-.35;world.add(penGroup);
+  cylinder(.022,.57,mat('#253039',.28,.35),0,0,0,penGroup);
+  for(const y of [-.25,.20,.27])cylinder(.024,.018,brass,0,y,0,penGroup);
+  mesh(new THREE.ConeGeometry(.02,.11,20),brass,0,.335,0,penGroup);
+  box(.012,.18,.012,brass,.026,-.16,0,penGroup);
   // Lanterns have glass, metal frames, wax and warm emissive flames.
   const fallbackProps=new THREE.Group();world.add(fallbackProps);
   const originalChildren=new Set(world.children);
-  for(const [x,z] of [[.25,-.55],[5,-1],[-5,-3]]){
-    const y=x===.25?1.13:0;
+  for(const [x,z] of [[5,-1],[-5,-3]]){
+    const y=3.1;
     box(.35,.04,.35,brass,x,y+.02,z);
     for(const dx of [-.16,.16])for(const dz of [-.16,.16])box(.025,.6,.025,brass,x+dx,y+.32,z+dz);
     box(.38,.06,.38,brass,x,y+.64,z);
@@ -122,16 +150,31 @@ function initialize() {
     const light=new THREE.PointLight('#ffb966',3,4,2);light.position.set(x,y+.5,z);scene.add(light);
   }
   for(const child of [...world.children])if(!originalChildren.has(child))fallbackProps.add(child);
+  for(const [x,z] of [[5,-1],[-5,-3]]){
+    for(let y=3.98;y<4.96;y+=.055){const link=mesh(new THREE.TorusGeometry(.035,.006,6,12),brass,x,y,z);link.rotation.y=Math.round(y/.055)%2?Math.PI/2:0}
+    box(.16,.04,.16,brass,x,4.97,z);
+  }
+  // Weighted brass lamp, fluted ceramic body, fabric shade and warm bulb.
+  cylinder(.22,.055,brass,.25,1.16,-.55);
+  cylinder(.07,.35,brass,.25,1.36,-.55);
+  const ceramic=mat('#9c7c69',.42);ceramic.map=grain('#d2bd9f');ceramic.bumpMap=ceramic.map;ceramic.bumpScale=.015;
+  const lampBody=mesh(new THREE.SphereGeometry(.16,32,20),ceramic,.25,1.36,-.55);lampBody.scale.y=1.15;
+  const shadeMat=linen.clone();shadeMat.side=THREE.DoubleSide;shadeMat.emissive=new THREE.Color('#a46f37');shadeMat.emissiveIntensity=.18;
+  mesh(new THREE.CylinderGeometry(.19,.34,.38,64,1,true),shadeMat,.25,1.78,-.55);
+  for(const [y,r] of [[1.59,.34],[1.97,.19]]){const rim=mesh(new THREE.TorusGeometry(r,.01,8,64),linen,.25,y,-.55);rim.rotation.x=Math.PI/2}
+  mesh(new THREE.SphereGeometry(.055,16,12),new THREE.MeshBasicMaterial({color:'#ffe5ae'}),.25,1.7,-.55);
+  const lampLight=new THREE.PointLight('#ffcb89',5,5,2);lampLight.position.set(.25,1.65,-.55);scene.add(lampLight);
   const assets=new GLTFLoader();let modelsLoaded=0;
   function prepareModel(root){root.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;const materials=Array.isArray(o.material)?o.material:[o.material];for(const m of materials){if(m.name.includes('Leaf')){m.side=THREE.DoubleSide;m.roughness=.75}if(m.name.includes('terracotta')){m.map=grain('#caa98c');m.bumpMap=m.map;m.bumpScale=.025}if(m.name.includes('glass')){m.depthWrite=false;o.castShadow=false}}})}
   assets.load('assets/models/terrace-fern.glb',gltf=>{prepareModel(gltf.scene);for(const [x,z] of [[-5.6,-3.6],[5.6,-3.6],[5.6,3.4]]){const plant=gltf.scene.clone();plant.position.set(x,0,z);world.add(plant)}host.dataset.models=String(++modelsLoaded);requestRender()},undefined,()=>console.warn('Plant model could not load.'));
-  assets.load('assets/models/terrace-lantern.glb',gltf=>{prepareModel(gltf.scene);for(const [x,y,z] of [[.25,1.13,-.55],[5,0,-1],[-5,0,-3]]){const lantern=gltf.scene.clone();lantern.position.set(x,y,z);world.add(lantern)}fallbackProps.visible=false;host.dataset.models=String(++modelsLoaded);requestRender()},undefined,()=>console.warn('Using simplified lanterns.'));
+  assets.load('assets/models/terrace-lantern.glb',gltf=>{prepareModel(gltf.scene);for(const [x,y,z] of [[5,3.1,-1],[-5,3.1,-3]]){const lantern=gltf.scene.clone();lantern.position.set(x,y,z);world.add(lantern)}fallbackProps.visible=false;host.dataset.models=String(++modelsLoaded);requestRender()},undefined,()=>console.warn('Using simplified lanterns.'));
   // Gifts and letters have physical places on a side console.
   box(2.5,.10,.85,wood,-3,1.05,-3.9);
   for(const x of [-4,-2])for(const z of [-4.2,-3.6])box(.07,1.05,.07,brass,x,.52,z);
   for(let i=0;i<3;i++){
     const x=-3.8+i*.65, h=.30+i%2*.12;
     const gift=chapter(box(.46,h,.44,mat(['#9e6577','#c0a074','#897392'][i]),x,1.10+h/2,-3.9),'surprises');
+    gift.material.map=grain('#dfcebc');gift.material.bumpMap=gift.material.map;gift.material.bumpScale=.015;
     chapter(box(.49,.045,.47,linen,x,1.10+h,-3.9),'surprises');
     chapter(box(.07,h+.06,.455,brass,x,1.10+h/2,-3.9),'surprises');
     for(const sign of [-1,1]){const bow=mesh(new THREE.TorusGeometry(.08,.012,6,20),brass,x+sign*.07,1.15+h,-3.9);bow.rotation.x=Math.PI/2;bow.scale.y=.6;chapter(bow,'surprises')}
@@ -141,7 +184,10 @@ function initialize() {
   const starShape=new THREE.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.07:.16;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?starShape.lineTo(x,y):starShape.moveTo(x,y)}starShape.closePath();
   for(let i=0;i<5;i++){const x=1.3+i*.8,y=2.6+Math.sin(i)*.15;chapter(mesh(new THREE.ExtrudeGeometry(starShape,{depth:.035,bevelEnabled:true,bevelSize:.008,bevelThickness:.008,bevelSegments:2}),brass,x,y,-3.9),'reasons');box(.008,4.8-y,.008,brass,x,(4.8+y)/2,-3.9)}
   // Framed memories stand on a gallery wall inside the terrace.
-  box(.18,3.6,6,mat('#a99380'),-6,1.8,0);
+  const plaster=mat('#b6a18c');plaster.map=grain('#d1c6b7');plaster.bumpMap=plaster.map;plaster.bumpScale=.045;
+  box(.18,3.6,6,plaster,-6,1.8,0);
+  for(const y of [.12,1.05,3.5])box(.09,.09,6,wood,-5.86,y,0);
+  for(let z=-2.9;z<3;z+=.58)box(.07,.9,.04,wood,-5.86,.57,z);
   const loader=new THREE.TextureLoader();
   const pictures=['hero-desktop.webp','our-story.webp','why-i-love-you.webp'];
   pictures.forEach((name,i)=>{
