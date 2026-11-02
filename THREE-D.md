@@ -38,10 +38,21 @@ and pergola braces and fittings. A shaded ceramic-and-brass table lamp lights
 the writing desk. Candle lanterns hang from roof chains instead of sitting on
 the floor. These details are built in Three.js alongside the Blender props.
 
-`assets/js/terrace-garden.js` adds a seeded garden around every side: textured
-terrain, stone steps and a winding path, rocks, lavender, branching trees with
-bark, and individual grass blades. Grass, leaves and flowers use instancing to
-keep draw calls bounded. Canvas-generated textures are original project work.
+`assets/js/terrace-garden.js` adds textured terrain, stone steps and a winding
+path, clustered rocks, branching trees and curved grass clumps. Eight original
+Blender GLBs replace the earlier primitive plants and rocks. Their embedded
+textures include bark, leaf veins and mineral surfaces. Repeated models use
+instancing. The writing-table preset faces the paper with its text upright.
+
+Click the table lamp or activate the Table lamp toggle button to switch its
+point light, shade emission and bulb appearance. Dragging the camera does not
+toggle it. The button exposes its state through `aria-pressed`.
+
+Rebuild the garden assets with `python3 tools/blender/garden_textures.py`, then
+`blender -b -t 2 --python tools/blender/build_garden.py`. The source scripts are
+the editable asset source; `assets/models/garden/provenance.json` records byte
+counts, triangle counts and SHA-256 hashes. Poly Haven and ambientCG requests
+returned HTTP 403 in this environment, so no third-party assets were admitted.
 
 ## Blender assets
 

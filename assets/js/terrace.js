@@ -2,7 +2,7 @@ import * as THREE from '../vendor/three/three.module.min.js';
 import { GLTFLoader } from '../vendor/three/loaders/GLTFLoader.js';
 import { RoundedBoxGeometry } from '../vendor/three/geometries/RoundedBoxGeometry.js';
 import { OrbitControls } from '../vendor/three/controls/OrbitControls.js';
-import { createGarden } from './terrace-garden.js';
+import { createGarden } from './terrace-garden.js?v=2-models';
 
 // A real, locally served WebGL scene. Existing HTML remains the fallback.
 const host = document.querySelector('#terrace');
@@ -32,7 +32,7 @@ function initialize() {
   scene.fog = new THREE.FogExp2('#1c2439', .018);
   const camera = new THREE.PerspectiveCamera(48,1,.05,300);
   const world = new THREE.Group(); scene.add(world);
-  createGarden(world);
+  createGarden(world,()=>{renderer.shadowMap.needsUpdate=true;requestRender()});
   const mat = (color, roughness=.7, metalness=0) => new THREE.MeshStandardMaterial({color,roughness,metalness});
   const stone=mat('#ad9c87'), dark=mat('#342a27'), brass=mat('#b99a59',.28,.7), wood=mat('#76523b'), linen=mat('#e1c9b5'), rose=mat('#a96272');
   function mesh(geometry,material,x,y,z,parent=world){
@@ -109,6 +109,7 @@ function initialize() {
   }
   for(const x of [.85,5.15])box(.24,.8,1.6,wood,x,.8,-2.8);
   // Matching armchair with a timber frame and piped upholstered cushions.
+  const beforeChair=new Set(world.children);
   for(const x of [-2.5,-1.4])for(const z of [.25,1.35])box(.09,.65,.09,wood,x,.325,z);
   box(1.35,.20,1.35,wood,-1.95,.62,.8);box(1.14,.25,1.15,linen,-1.95,.83,.8);
   const chairBack=box(1.2,.9,.25,rose,-1.95,1.3,1.35);chairBack.rotation.x=.12;
@@ -120,6 +121,10 @@ function initialize() {
     const screw=cylinder(.024,.007,brass,x,x>0?1.205:1.12,z);
     box(.028,.003,.004,dark,screw.position.x,screw.position.y+.005,z);
   }
+  // Turn the seat itself toward the letter as well as aligning its camera view.
+  const writingChair=new THREE.Group();writingChair.position.set(-1.95,0,.8);world.add(writingChair);world.updateMatrixWorld(true);
+  for(const child of [...world.children])if(child!==writingChair&&!beforeChair.has(child)&&child.position.x<0)writingChair.attach(child);
+  writingChair.rotation.y=Math.atan2(-2.9,.6);
   // Woven rug and writing table.
   const rug=mat('#96846d');rug.map=weaveMap;rug.bumpMap=weaveMap;rug.bumpScale=.025;
   box(5,.025,3.4,rug,1,.015,.1);
@@ -169,6 +174,7 @@ function initialize() {
     box(.16,.04,.16,brass,x,4.97,z);
   }
   // Weighted brass lamp, fluted ceramic body, fabric shade and warm bulb.
+  const beforeLamp=new Set(world.children);
   cylinder(.22,.055,brass,.25,1.16,-.55);
   cylinder(.07,.35,brass,.25,1.36,-.55);
   const ceramic=mat('#9c7c69',.42);ceramic.map=grain('#d2bd9f');ceramic.bumpMap=ceramic.map;ceramic.bumpScale=.015;
@@ -180,8 +186,12 @@ function initialize() {
   const shadeMat=linen.clone();shadeMat.side=THREE.DoubleSide;shadeMat.emissive=new THREE.Color('#a46f37');shadeMat.emissiveIntensity=.18;
   mesh(new THREE.CylinderGeometry(.19,.34,.38,64,1,true),shadeMat,.25,1.78,-.55);
   for(const [y,r] of [[1.59,.34],[1.97,.19]]){const rim=mesh(new THREE.TorusGeometry(r,.01,8,64),linen,.25,y,-.55);rim.rotation.x=Math.PI/2}
-  mesh(new THREE.SphereGeometry(.055,16,12),new THREE.MeshBasicMaterial({color:'#ffe5ae'}),.25,1.7,-.55);
+  const bulb=mesh(new THREE.SphereGeometry(.055,16,12),new THREE.MeshBasicMaterial({color:'#ffe5ae'}),.25,1.7,-.55);
   const lampLight=new THREE.PointLight('#ffcb89',5,5,2);lampLight.position.set(.25,1.65,-.55);scene.add(lampLight);
+  for(const child of world.children)if(!beforeLamp.has(child)){child.userData.panel='lamp';clickable.push(child)}
+  let lampOn=true;
+  function toggleLamp(){lampOn=!lampOn;lampLight.visible=lampOn;shadeMat.emissiveIntensity=lampOn?.18:0;bulb.material.color.set(lampOn?'#ffe5ae':'#746d5f');document.querySelector('#terraceLamp').setAttribute('aria-pressed',String(lampOn));document.querySelector('#terraceStatus').textContent=lampOn?'Table lamp on.':'Table lamp off.';requestRender()}
+  document.querySelector('#terraceLamp').addEventListener('click',toggleLamp);
   const assets=new GLTFLoader();let modelsLoaded=0;
   function prepareModel(root){renderer.shadowMap.needsUpdate=true;root.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;const materials=Array.isArray(o.material)?o.material:[o.material];for(const m of materials){if(m.name.includes('Leaf')){m.side=THREE.DoubleSide;m.roughness=.75}if(m.name.includes('terracotta')){m.map=grain('#caa98c');m.bumpMap=m.map;m.bumpScale=.025}if(m.name.includes('glass')){m.depthWrite=false;o.castShadow=false}}})}
   assets.load('assets/models/terrace-fern.glb',gltf=>{prepareModel(gltf.scene);for(const [x,z] of [[-5.6,-3.6],[5.6,-3.6],[5.6,3.4]]){const plant=gltf.scene.clone();plant.position.set(x,0,z);world.add(plant)}host.dataset.models=String(++modelsLoaded);requestRender()},undefined,()=>console.warn('Plant model could not load.'));
@@ -233,7 +243,7 @@ function initialize() {
   const views=[
     {p:[10,7,12],t:[0,1,0],label:'A place for just the two of us.'},
     {p:[.3,3.3,5],t:[-5.7,2.2,-.1],label:'Our stories — select a framed photo to read them.'},
-    {p:[2.2,3.1,2.5],t:[.95,1.14,.15],label:'A letter, just for you.'},
+    {p:[.95,3.7,2.45],t:[.95,1.14,.4],label:'A letter, just for you.'},
     {p:[12,16,15],t:[0,0,0],label:'Our own little corner of the world.'}
   ];
   let view=0, dragging=false, frame=0, visible=true, transitioning=false;
@@ -251,7 +261,7 @@ function initialize() {
   document.querySelector('#terraceLetter').addEventListener('click',()=>document.querySelector('#openFinalLetter').click());
   const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let startX=0,startY=0;
   function pick(e){const r=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(pointer,camera);return raycaster.intersectObjects(clickable,false)[0]?.object.userData.panel}
-  function openChapter(panel){const section=document.getElementById(panel);if(!section)return;location.hash=panel;section.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});section.setAttribute('tabindex','-1');section.focus({preventScroll:true})}
+  function openChapter(panel){if(panel==='lamp'){toggleLamp();return}const section=document.getElementById(panel);if(!section)return;location.hash=panel;section.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});section.setAttribute('tabindex','-1');section.focus({preventScroll:true})}
   document.querySelectorAll('.terrace-chapters a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();openChapter(a.hash.slice(1))}));
   let moved=false,pointerCount=0;
   renderer.domElement.addEventListener('pointerdown',e=>{pointerCount++;moved=pointerCount>1;dragging=true;startX=e.clientX;startY=e.clientY});

@@ -1,0 +1,57 @@
+{
+  "origin": "Original project assets, no third-party inputs",
+  "authoringTool": "4.3.2",
+  "source": "tools/blender/build_garden.py",
+  "textures": "tools/blender/garden_textures.py",
+  "units": "metres",
+  "models": [
+    {
+      "file": "garden-tree-0.glb",
+      "triangles": 64528,
+      "bytes": 2323424,
+      "sha256": "05babec65d4466d11418944c1f3b1a52bff319c4f97d3d9ba2d69d53e9fb70bc"
+    },
+    {
+      "file": "garden-tree-1.glb",
+      "triangles": 64528,
+      "bytes": 2323436,
+      "sha256": "197136655e0de4354130c102e2f5a1e26fbbfcc6daf6fab6c3c26bde7cb4173e"
+    },
+    {
+      "file": "garden-rock-0.glb",
+      "triangles": 1280,
+      "bytes": 61988,
+      "sha256": "1a2c81ffb02401ed7c8cb332424d9174c815c0f5b176c4d5e825346100ad30e3"
+    },
+    {
+      "file": "garden-rock-1.glb",
+      "triangles": 1280,
+      "bytes": 62020,
+      "sha256": "70fe5e79016d77a34187003c0bf2e35d413bb8339b37f2bad163e05e37cf2ec8"
+    },
+    {
+      "file": "garden-rock-2.glb",
+      "triangles": 1280,
+      "bytes": 61992,
+      "sha256": "310980e5a485d01c272f6a674f841933072f6c2dbfacef544c6607c009345b23"
+    },
+    {
+      "file": "garden-grass-0.glb",
+      "triangles": 560,
+      "bytes": 20740,
+      "sha256": "7748994cc17aace0153964a30aa79b209729486bccf9c21ad55371bf725fa51b"
+    },
+    {
+      "file": "garden-grass-1.glb",
+      "triangles": 560,
+      "bytes": 20736,
+      "sha256": "46a6461929f0c3e039413e02051d05d62e8467339577e5f9c99797cfa36ff489"
+    },
+    {
+      "file": "garden-grass-2.glb",
+      "triangles": 560,
+      "bytes": 20760,
+      "sha256": "ceff8453d20c48f3dbd47c3fb3ea02668d32a013f0528498a1c8165392e84f6c"
+    }
+  ]
+}
