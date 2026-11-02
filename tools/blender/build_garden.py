@@ -70,7 +70,7 @@ for variant in range(2):
             base=points[2+twig%6];ang=a+(1 if twig%2 else -1)*random.uniform(.5,1.7)
             end=base+Vector((math.cos(ang),math.sin(ang),random.uniform(.4,1.1)))*random.uniform(.6,1.2)
             tube(trunk,[base.lerp(end,t/4) for t in range(5)],.024,6)
-            for j in range(32):
+            for j in range(64):
                 t=random.uniform(.15,1.15);origin=base.lerp(end,t)+Vector((random.uniform(-.4,.4),random.uniform(-.4,.4),random.uniform(-.2,.3)))
                 angle=random.random()*math.tau;axis=Vector((math.cos(angle),math.sin(angle),random.uniform(-.35,.6))).normalized()
                 blade(foliage,origin,axis,random.uniform(.18,.35),random.uniform(.055,.09),random.uniform(.01,.05),4)
@@ -86,7 +86,7 @@ for variant in range(3):
     bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.uv.sphere_project();bpy.ops.object.mode_set(mode='OBJECT');export('garden-rock-'+str(variant))
 for variant in range(3):
     clear();data=Mesh()
-    for i in range(28):
+    for i in range(44):
         a=random.random()*math.tau;r=random.random()*.11;origin=Vector((math.cos(a)*r,math.sin(a)*r,0));length=random.uniform(.17,.42)
         direction=Vector((math.cos(a)*random.uniform(.15,.65),math.sin(a)*random.uniform(.15,.65),1)).normalized()
         blade(data,origin,direction,length,random.uniform(.004,.009),.025,5)

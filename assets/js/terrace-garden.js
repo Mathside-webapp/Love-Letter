@@ -3,6 +3,7 @@ import { GLTFLoader } from '../vendor/three/loaders/GLTFLoader.js';
 
 // Original Blender assets, with repeatable, deliberately uneven planting.
 export function createGarden(world, onLoad) {
+  const wind={value:0};
   let seed=7429;
   const random=()=>((seed=seed*16807%2147483647)-1)/2147483646;
   const loader=new THREE.TextureLoader();
@@ -32,17 +33,35 @@ export function createGarden(world, onLoad) {
     placements[`rock-${v}`]=[];
     for(const [cx,cz] of [[-9,-5],[10,-6],[-12,10],[15,5]])for(let i=0;i<3;i++)placements[`rock-${v}`].push({x:cx+(random()-.5)*3,z:cz+(random()-.5)*2,s:.2+random()*.65,angle:random()*6,buried:.12});
     placements[`grass-${v}`]=[];
-    for(let i=0;i<650;i++){
+    for(let i=0;i<900;i++){
       let x,z;do{x=(random()-.5)*43;z=(random()-.5)*43}while((Math.abs(x)<7.4&&Math.abs(z)<5.7)||(z>5&&z<28&&Math.abs(x-Math.sin((z-5.8)/.92*.24)*2.3)<1.15));
       placements[`grass-${v}`].push({x,z,s:.45+random()*.65,angle:random()*6});
     }
   }
-  for(const [name,instances] of Object.entries(placements))gltf.load(`assets/models/garden/garden-${name}.glb`,asset=>{
+  for(const [name,instances] of Object.entries(placements))gltf.load(`assets/models/garden/garden-${name}.glb?v=2-fuller`,asset=>{
     asset.scene.updateMatrixWorld(true);
     asset.scene.traverse(source=>{
       if(!source.isMesh)return;
       const geometry=source.geometry.clone().applyMatrix4(source.matrixWorld);
       const material=source.material;material.side=THREE.DoubleSide;
+      if(name.startsWith('tree')||name.startsWith('grass')){
+        const grass=name.startsWith('grass'),leaf=material.name.toLowerCase().includes('leaves');
+        material.onBeforeCompile=shader=>{
+          shader.uniforms.gardenTime=wind;
+          shader.vertexShader='uniform float gardenTime;\n'+shader.vertexShader;
+          shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
+            vec2 anchor=vec2(0.);
+            #ifdef USE_INSTANCING
+              anchor=instanceMatrix[3].xz;
+            #endif
+            float windWeight=clamp(position.y/${grass?'0.45':'6.'},0.,1.);
+            float breeze=sin(gardenTime*.75+anchor.x*.12+anchor.y*.09);
+            transformed.x+=breeze*windWeight*${grass?'.085':'.14'};
+            transformed.z+=sin(gardenTime*.57+anchor.y*.13)*windWeight*${grass?'.035':'.06'};
+            ${leaf?'transformed.y+=sin(gardenTime*1.7+position.x*4.+position.z*3.)*.018*windWeight;':''}`);
+        };
+        material.customProgramCacheKey=()=>`garden-wind-${grass}-${leaf}`;
+      }
       if(material.map)material.map.anisotropy=4;
       if(name.startsWith('tree')&&material.name.includes('bark')){material.bumpMap=material.map;material.bumpScale=.06}
       if(name.startsWith('rock')){material.bumpMap=material.map;material.bumpScale=.035}
@@ -52,4 +71,5 @@ export function createGarden(world, onLoad) {
     });
     document.querySelector('#terrace').dataset.gardenModels=String(++loaded);onLoad();
   },undefined,()=>console.warn(`Garden asset unavailable: ${name}`));
+  return {update(seconds){wind.value=seconds}};
 }

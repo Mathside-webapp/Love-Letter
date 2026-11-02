@@ -7,15 +7,15 @@
   "models": [
     {
       "file": "garden-tree-0.glb",
-      "triangles": 64528,
-      "bytes": 2323424,
-      "sha256": "05babec65d4466d11418944c1f3b1a52bff319c4f97d3d9ba2d69d53e9fb70bc"
+      "triangles": 121872,
+      "bytes": 5075944,
+      "sha256": "e99918f113dece13851adf85228d1a5dc60d81280e89f399173516ada0b6490a"
     },
     {
       "file": "garden-tree-1.glb",
-      "triangles": 64528,
-      "bytes": 2323436,
-      "sha256": "197136655e0de4354130c102e2f5a1e26fbbfcc6daf6fab6c3c26bde7cb4173e"
+      "triangles": 121872,
+      "bytes": 5075952,
+      "sha256": "4224b8367a559f7698f8fab170697fd31b34934705292876b2488b0b7680dd2e"
     },
     {
       "file": "garden-rock-0.glb",
@@ -37,21 +37,21 @@
     },
     {
       "file": "garden-grass-0.glb",
-      "triangles": 560,
-      "bytes": 20740,
-      "sha256": "7748994cc17aace0153964a30aa79b209729486bccf9c21ad55371bf725fa51b"
+      "triangles": 880,
+      "bytes": 31872,
+      "sha256": "993f816213fa4fa4b6999e029850a6ec368d3ba76d062f9a184239264b7651bd"
     },
     {
       "file": "garden-grass-1.glb",
-      "triangles": 560,
-      "bytes": 20736,
-      "sha256": "46a6461929f0c3e039413e02051d05d62e8467339577e5f9c99797cfa36ff489"
+      "triangles": 880,
+      "bytes": 31880,
+      "sha256": "ef135a8e4ff242b6cb3c7d703ff211777540d58579f2a59c49a1bea2eaa20a01"
     },
     {
       "file": "garden-grass-2.glb",
-      "triangles": 560,
-      "bytes": 20760,
-      "sha256": "ceff8453d20c48f3dbd47c3fb3ea02668d32a013f0528498a1c8165392e84f6c"
+      "triangles": 880,
+      "bytes": 31896,
+      "sha256": "f8c91b1518fa2eaf88e078667f817ceb19377804d02ab92b917c0aee6bffd5da"
     }
   ]
 }

@@ -2,7 +2,8 @@ import * as THREE from '../vendor/three/three.module.min.js';
 import { GLTFLoader } from '../vendor/three/loaders/GLTFLoader.js';
 import { RoundedBoxGeometry } from '../vendor/three/geometries/RoundedBoxGeometry.js';
 import { OrbitControls } from '../vendor/three/controls/OrbitControls.js';
-import { createGarden } from './terrace-garden.js?v=2-models';
+import { createGarden } from './terrace-garden.js?v=3-fuller';
+import { createAtmosphere } from './terrace-sky.js';
 
 // A real, locally served WebGL scene. Existing HTML remains the fallback.
 const host = document.querySelector('#terrace');
@@ -29,10 +30,10 @@ function initialize() {
   renderer.domElement.setAttribute('aria-label','Explore the terrace. Drag to orbit, scroll to zoom, right drag or arrow keys to pan. Plus and minus zoom. R resets the view.');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#1c2439');
-  scene.fog = new THREE.FogExp2('#1c2439', .018);
-  const camera = new THREE.PerspectiveCamera(48,1,.05,300);
+  scene.fog = new THREE.FogExp2('#1c2439', .009);
+  const camera = new THREE.PerspectiveCamera(48,1,.05,400);
   const world = new THREE.Group(); scene.add(world);
-  createGarden(world,()=>{renderer.shadowMap.needsUpdate=true;requestRender()});
+  const garden=createGarden(world,()=>{renderer.shadowMap.needsUpdate=true;requestRender()});
   const mat = (color, roughness=.7, metalness=0) => new THREE.MeshStandardMaterial({color,roughness,metalness});
   const stone=mat('#ad9c87'), dark=mat('#342a27'), brass=mat('#b99a59',.28,.7), wood=mat('#76523b'), linen=mat('#e1c9b5'), rose=mat('#a96272');
   function mesh(geometry,material,x,y,z,parent=world){
@@ -226,27 +227,22 @@ function initialize() {
     const photo=chapter(mesh(new THREE.PlaneGeometry(1.16,1.3),new THREE.MeshStandardMaterial({map:tex,roughness:.55}),-5.70,2.25,z),'story');
     photo.rotation.y=Math.PI/2;
   });
-  // Distant mountains and a moon establish depth beyond the balcony.
-  const hills=new THREE.PlaneGeometry(150,70,120,56);
-  const hp=hills.attributes.position;
-  for(let i=0;i<hp.count;i++){
-    const x=hp.getX(i),z=hp.getY(i),ramp=THREE.MathUtils.smoothstep(z,-35,-10);
-    const ridge=5+3*Math.sin(x*.12+z*.08)+2*Math.sin(x*.31-z*.19)+.8*Math.sin(x*.87+z*.43);
-    hp.setZ(i,Math.max(0,ridge)*ramp);
-  }
-  hills.computeVertexNormals();
-  const landscape=mesh(hills,mat('#29374a'),0,-3,-55);landscape.rotation.x=-Math.PI/2;landscape.castShadow=false;
-  mesh(new THREE.SphereGeometry(1.6,32,24),new THREE.MeshBasicMaterial({color:'#f3dfba'}),-7,12,-35);
-  const starPositions=[];for(let i=0;i<260;i++){const a=i*2.399;starPositions.push(Math.sin(a)*55,8+(i%39),-20-Math.cos(a)*20)}
-  const stars=new THREE.BufferGeometry();stars.setAttribute('position',new THREE.Float32BufferAttribute(starPositions,3));scene.add(new THREE.Points(stars,new THREE.PointsMaterial({color:'#ffe7c0',size:.055})));
+  const atmosphere=createAtmosphere(scene,requestRender);
 
   const views=[
     {p:[10,7,12],t:[0,1,0],label:'A place for just the two of us.'},
     {p:[.3,3.3,5],t:[-5.7,2.2,-.1],label:'Our stories — select a framed photo to read them.'},
     {p:[.95,3.7,2.45],t:[.95,1.14,.4],label:'A letter, just for you.'},
-    {p:[12,16,15],t:[0,0,0],label:'Our own little corner of the world.'}
+    {p:[12,16,15],t:[0,0,0],label:'Our own little corner of the world.'},
+    {p:[3,7,13],t:[-28,46,-100],label:'Under the same moon. A shooting star, now and then.'}
   ];
   let view=0, dragging=false, frame=0, visible=true, transitioning=false;
+  let skyMotion=!reduced.matches,skySeconds=0,lastSkyFrame=performance.now(),skyTimer=0;
+  const motionButton=document.querySelector('#terraceMotion');
+  function updateMotion(){motionButton.setAttribute('aria-pressed',String(skyMotion));motionButton.disabled=reduced.matches;motionButton.textContent=reduced.matches?'Motion: reduced':'Scene motion';lastSkyFrame=performance.now();clearTimeout(skyTimer);requestRender()}
+  motionButton.addEventListener('click',()=>{skyMotion=!skyMotion;updateMotion()});
+  reduced.addEventListener('change',()=>{skyMotion=!reduced.matches;updateMotion()});
+  updateMotion();
   const target=new THREE.Vector3(),destination=new THREE.Vector3();
   const controls=new OrbitControls(camera,renderer.domElement);
   controls.minDistance=.35;controls.maxDistance=100;controls.maxPolarAngle=Math.PI-.01;
@@ -270,12 +266,12 @@ function initialize() {
   renderer.domElement.addEventListener('pointermove',e=>{if(dragging&&Math.hypot(e.clientX-startX,e.clientY-startY)>6)moved=true});
   for(const event of ['pointerup','pointercancel'])renderer.domElement.addEventListener(event,()=>{dragging=false;if(event==='pointercancel'){moved=true;pointerCount=0}});
   function resize(){const {width,height}=host.getBoundingClientRect();renderer.setSize(width,height);camera.aspect=width/height;camera.updateProjectionMatrix();requestRender()}
-  function render(){frame=0;if(!visible||document.hidden)return;if(transitioning){camera.position.lerp(destination,.09);controls.target.lerp(target,.09);controls.update();if(camera.position.distanceTo(destination)<.005&&controls.target.distanceTo(target)<.005)transitioning=false;else requestRender()}renderer.render(scene,camera)}
+  function render(){frame=0;clearTimeout(skyTimer);const now=performance.now();if(!visible||document.hidden){lastSkyFrame=now;return}if(skyMotion)skySeconds+=Math.min(.2,(now-lastSkyFrame)/1000);lastSkyFrame=now;atmosphere.update(skySeconds,skyMotion);garden.update(skySeconds);if(transitioning){camera.position.lerp(destination,.09);controls.target.lerp(target,.09);controls.update();if(camera.position.distanceTo(destination)<.005&&controls.target.distanceTo(target)<.005)transitioning=false;else requestRender()}renderer.render(scene,camera);if(skyMotion)skyTimer=setTimeout(requestRender,66)}
   function requestRender(){if(!frame)frame=requestAnimationFrame(render)}
   new ResizeObserver(resize).observe(host);
-  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible)requestRender()}).observe(host);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)requestRender()});
-  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();document.documentElement.classList.remove('terrace-ready');document.querySelector('.terrace-tools').hidden=true;host.hidden=true});
+  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;clearTimeout(skyTimer);lastSkyFrame=performance.now();if(visible)requestRender()}).observe(host);
+  document.addEventListener('visibilitychange',()=>{clearTimeout(skyTimer);lastSkyFrame=performance.now();if(!document.hidden)requestRender()});
+  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();skyMotion=false;clearTimeout(skyTimer);document.documentElement.classList.remove('terrace-ready');document.querySelector('.terrace-tools').hidden=true;host.hidden=true});
   document.documentElement.classList.add('terrace-ready');document.querySelector('.terrace-tools').hidden=false;
   setDestination();camera.position.copy(destination);controls.target.copy(target);controls.update();resize();
 }
