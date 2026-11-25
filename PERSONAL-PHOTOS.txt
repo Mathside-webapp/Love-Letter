@@ -1,0 +1,9 @@
+All five personal JPEGs are now included in the website. No uploading through the photo editor is required.
+
+Memory cards and popups: Memory Photos 1–4 in order.
+3D terrace gallery wall: Memory Photos 1–3.
+Our Story floating Polaroids: Memory Photo 4 and Anniversary Photo.
+Final anniversary letter: Anniversary Photo.
+Decorative parchment message remains unchanged.
+
+Publish the whole website folder (including assets) to GitHub Pages.

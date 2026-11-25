@@ -15,7 +15,7 @@
 <body>
 <header class="top"><h1>Make it yours, for Babi ♡</h1><p>A private, local editor for your anniversary website. No account, no uploads, no backend.</p></header>
 <main class="shell">
- <section class="steps"><p><b>How to use:</b> Customize your writing, then press <b>Choose photo from device</b> inside each memory, star, or letter. The first two memory photos also appear inside the large floating Polaroids. Finally, click <b>Download Personalized ZIP</b>, extract its <code>assets/</code> folder into your website folder, and merge/replace the files. Everything happens on your device; nothing is uploaded.</p></section>
+ <section class="steps"><p><b>How to use:</b> Customize your writing, then press <b>Choose photo from device</b> inside each memory, star, or letter. The large floating Polaroids and decorative letter stay unchanged. Your personal photos appear in their memory cards and letters. Finally, click <b>Download Personalized ZIP</b>, extract its <code>assets/</code> folder into your website folder, and merge/replace the files. Everything happens on your device; nothing is uploaded. To preview the 3D terrace, use START-WEBSITE.bat or your GitHub Pages address, not a double-click on index.html.</p></section>
  <div class="toolbar" role="tablist" aria-label="Website chapters">
   <button class="tab" data-tab="basics" aria-selected="true" role="tab">Welcome</button>
   <button class="tab" data-tab="memories" role="tab">Memories</button>
@@ -26,6 +26,7 @@
  </div>
  <div id="editorPanels"></div>
  <p class="note">🔒 <b>Privacy:</b> This editor runs on your own device. When you publish on GitHub Pages, remove the <code>tools/</code> folder. Any personal content in a public GitHub Pages repository is publicly accessible, even without a link on the website.</p>
+ <p><a href="../index.html?edit=1">Open website photo editing mode</a></p>
  <section class="download"><div><h2>Ready to surprise Babi?</h2><p>Your selected photos, recordings, and messages—organized into the correct folders.</p><p id="selectionStatus">No photos selected yet. Use the Choose Photo buttons under each chapter.</p></div><div class="export-buttons"><button type="button" id="downloadBundle">Download Personalized ZIP ↓</button><button type="button" id="downloadConfig" class="quiet-export">Only config.js</button></div></section>
  <p class="status" id="status" aria-live="polite"></p>
 </main>

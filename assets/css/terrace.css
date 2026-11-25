@@ -45,3 +45,7 @@
  #terraceLetter{grid-column:1/-1;margin:0}
 }
 @media(prefers-reduced-motion:reduce){.terrace-ready .hero-content{transition:none}}
+
+.terrace[hidden],.terrace-recovery[hidden]{display:none!important}
+.terrace-recovery{position:absolute;bottom:12%;left:50%;transform:translateX(-50%);z-index:6;max-width:min(90%,520px);padding:10px 14px;background:#21172ee8;border:1px solid #e7bdc66b;border-radius:12px;color:#fff1ed;font:12px/1.45 var(--sans);text-align:center}
+.terrace-recovery button{display:block;margin:8px auto 0;border:1px solid #e7bdc6;background:#e7bdc6;color:#382339;padding:8px 14px;border-radius:8px;cursor:pointer;font:inherit}

@@ -1,0 +1,5 @@
+1. Extract the entire ZIP (right-click > Extract All). Do not open HTML inside the compressed ZIP preview.
+2. Double-click edit-photos.html in the extracted folder, using Chrome or Edge. It is a standalone editor, no server needed. Click a picture or a Choose File button. Wait for the preview to appear.
+3. Use JPG, PNG, WebP or AVIF, up to 25 MB. Convert HEIC to JPEG first.
+4. Click Download photo updates ZIP. Extract it and merge its assets folder into your website, replacing config.js. Publish the same files to GitHub Pages.
+5. To edit in the actual website use index.html?edit=1 on the published site. To view the 3D terrace locally use START-WEBSITE.bat. Normal index.html has no editing controls. Editor is not authentication; personal photos become public if hosted publicly.

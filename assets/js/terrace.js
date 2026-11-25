@@ -8,17 +8,22 @@ import { createAtmosphere } from './terrace-sky.js?v=2-open-sky';
 // A real, locally served WebGL scene. Existing HTML remains the fallback.
 const host = document.querySelector('#terrace');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+const lightMode = new URLSearchParams(location.search).get('terrace') === 'light';
 let renderer;
-try {
-  renderer = new THREE.WebGLRenderer({antialias:true, alpha:false, powerPreference:'low-power'});
-} catch (error) {
-  console.info('Using the illustrated version: WebGL unavailable.');
+function failTerrace(error) {
+  console.error('Terrace rendering unavailable:', error);
+  window.dispatchEvent(new CustomEvent('terrace-failed', {detail: '3D rendering unavailable. Your letters are safe; try the other 3D mode.'}));
 }
-if (renderer) initialize();
+try {
+  renderer = new THREE.WebGLRenderer({antialias:!lightMode, alpha:false, powerPreference:'default'});
+  initialize();
+} catch (error) {
+  failTerrace(error);
+}
 
 function initialize() {
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
-  renderer.shadowMap.enabled = true;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, lightMode ? 1 : 1.6));
+  renderer.shadowMap.enabled = !lightMode;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   // Geometry and lights are static: camera movement can reuse shadow maps.
   renderer.shadowMap.autoUpdate = false;
@@ -137,21 +142,22 @@ function initialize() {
   for(const x of [.2,1.8])for(const z of [-.65,.65])box(.09,1,.09,brass,x,.5,z);
   const clickable=[];
   function chapter(object,panel){object.userData.panel=panel;clickable.push(object);return object}
-  // The same floral paper and personal words as the final letter panel.
+  // Permanent floral note, matching the decorative parchment in the final chapter.
   const paperMaterial=new THREE.MeshStandardMaterial({color:'#ffffff',transparent:true,alphaTest:.08,roughness:.92,side:THREE.DoubleSide});
   const letter=chapter(mesh(new THREE.PlaneGeometry(.95,1.02),paperMaterial,.95,1.134,.2),'forever');letter.rotation.x=-Math.PI/2;
-  const paperImage=new Image();paperImage.src='assets/images/sprites/letter-card.webp';
+  const paperImage=new Image();
   paperImage.onload=()=>{
     const canvas=document.createElement('canvas');canvas.width=768;canvas.height=820;
     const ctx=canvas.getContext('2d');ctx.drawImage(paperImage,56,0,paperImage.width-56,paperImage.height,0,0,768,820);
-    const data=window.LOVE_SITE_DATA||{};ctx.textAlign='center';ctx.fillStyle='#61374a';
-    ctx.font='italic 40px Georgia';ctx.fillText((data.finalLetter?.[0]||'My dearest Babi,').slice(0,45),384,320,560);
-    ctx.font='italic 25px Georgia';const words=(data.finalLetter?.[1]||'Every little moment with you means the world to me.').split(/\s+/);
+    ctx.textAlign='center';ctx.fillStyle='#61374a';
+    ctx.font='italic 40px Georgia';ctx.fillText('My dearest Babi,',384,320,560);
+    ctx.font='italic 25px Georgia';const words='Of all the lovely things life has brought me, one of the most beautiful is getting to know you.'.split(/\s+/);
     let line='',row=0;for(const word of words){const next=line+word+' ';if(ctx.measureText(next).width>510&&line){ctx.fillText(line.trim(),384,390+row*38);row++;line='';if(row===3)break}line+=word+' '}
     if(row<3)ctx.fillText(line.trim(),384,390+row*38);
     ctx.font='italic 31px Georgia';ctx.fillText('Always yours ♡',384,565);
     const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());paperMaterial.map=texture;paperMaterial.needsUpdate=true;requestRender();
   };
+  paperImage.src='assets/images/sprites/letter-card.webp';
   const penGroup=new THREE.Group();penGroup.position.set(1.6,1.155,.1);penGroup.rotation.x=Math.PI/2;penGroup.rotation.z=-.35;world.add(penGroup);
   cylinder(.022,.57,mat('#253039',.28,.35),0,0,0,penGroup);
   for(const y of [-.25,.20,.27])cylinder(.024,.018,brass,0,y,0,penGroup);
@@ -223,9 +229,22 @@ function initialize() {
     const z=-2+i*2;
     box(.12,1.65,1.5,brass,-5.86,2.25,z);
     box(.14,1.5,1.35,linen,-5.79,2.25,z);
-    const tex=loader.load(`assets/images/backgrounds/${name}`,()=>requestRender());tex.colorSpace=THREE.SRGBColorSpace;
-    const photo=chapter(mesh(new THREE.PlaneGeometry(1.16,1.3),new THREE.MeshStandardMaterial({map:tex,roughness:.55}),-5.70,2.25,z),'story');
+    const material=new THREE.MeshStandardMaterial({color:'#e1c9b5',roughness:.55});
+    const photo=chapter(mesh(new THREE.PlaneGeometry(1.16,1.3),material,-5.70,2.25,z),'story');
     photo.rotation.y=Math.PI/2;
+    const fallback=`assets/images/backgrounds/${name}`;
+    const personal=window.LOVE_SITE_DATA?.memories?.[i]?.image;
+    const url=typeof personal==='string' && /^[\w.\- ]+\.(png|jpe?g|webp|avif)$/i.test(personal)
+      ? `assets/images/memories/${encodeURIComponent(personal)}` : fallback;
+    function applyTexture(tex){
+      tex.colorSpace=THREE.SRGBColorSpace;
+      // Keep correct photo proportions by centering the crop within the existing frame.
+      const aspect=tex.image.width/tex.image.height, frameAspect=1.16/1.3;
+      if(aspect>frameAspect){tex.repeat.x=frameAspect/aspect;tex.offset.x=(1-tex.repeat.x)/2;}
+      else {tex.repeat.y=aspect/frameAspect;tex.offset.y=(1-tex.repeat.y)/2;}
+      material.map=tex;material.color.set('#ffffff');material.needsUpdate=true;requestRender();
+    }
+    loader.load(url,applyTexture,undefined,()=>{if(url!==fallback)loader.load(fallback,applyTexture);});
   });
   const atmosphere=createAtmosphere(scene,requestRender);
 
@@ -260,12 +279,11 @@ function initialize() {
   renderer.domElement.addEventListener('pointermove',e=>{if(dragging&&Math.hypot(e.clientX-startX,e.clientY-startY)>6)moved=true});
   for(const event of ['pointerup','pointercancel'])renderer.domElement.addEventListener(event,()=>{dragging=false;if(event==='pointercancel'){moved=true;pointerCount=0}});
   function resize(){const {width,height}=host.getBoundingClientRect();renderer.setSize(width,height);camera.aspect=width/height;camera.updateProjectionMatrix();requestRender()}
-  function render(){frame=0;clearTimeout(skyTimer);const now=performance.now();if(!visible||document.hidden){lastSkyFrame=now;return}if(skyMotion)skySeconds+=Math.min(.2,(now-lastSkyFrame)/1000);lastSkyFrame=now;atmosphere.update(skySeconds,skyMotion);garden.update(skySeconds);if(transitioning){camera.position.lerp(destination,.09);controls.target.lerp(target,.09);controls.update();if(camera.position.distanceTo(destination)<.005&&controls.target.distanceTo(target)<.005)transitioning=false;else requestRender()}renderer.render(scene,camera);if(skyMotion)skyTimer=setTimeout(requestRender,66)}
+  function render(){frame=0;clearTimeout(skyTimer);const now=performance.now();if(!visible||document.hidden){lastSkyFrame=now;return}if(skyMotion)skySeconds+=Math.min(.2,(now-lastSkyFrame)/1000);lastSkyFrame=now;atmosphere.update(skySeconds,skyMotion);garden.update(skySeconds);if(transitioning){camera.position.lerp(destination,.09);controls.target.lerp(target,.09);controls.update();if(camera.position.distanceTo(destination)<.005&&controls.target.distanceTo(target)<.005)transitioning=false;else requestRender()}try {renderer.render(scene,camera);} catch(error) {skyMotion=false;visible=false;failTerrace(error);return;} if (!document.documentElement.classList.contains('terrace-ready')) {document.documentElement.classList.add('terrace-ready');document.querySelector('.terrace-tools').hidden=false;} if(skyMotion)skyTimer=setTimeout(requestRender,lightMode?100:66)}
   function requestRender(){if(!frame)frame=requestAnimationFrame(render)}
   new ResizeObserver(resize).observe(host);
   new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;clearTimeout(skyTimer);lastSkyFrame=performance.now();if(visible)requestRender()}).observe(host);
   document.addEventListener('visibilitychange',()=>{clearTimeout(skyTimer);lastSkyFrame=performance.now();if(!document.hidden)requestRender()});
-  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();skyMotion=false;clearTimeout(skyTimer);document.documentElement.classList.remove('terrace-ready');document.querySelector('.terrace-tools').hidden=true;host.hidden=true});
-  document.documentElement.classList.add('terrace-ready');document.querySelector('.terrace-tools').hidden=false;
+  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();skyMotion=false;visible=false;clearTimeout(skyTimer);cancelAnimationFrame(frame);frame=0;failTerrace('WebGL context lost')});
   setDestination();camera.position.copy(destination);controls.target.copy(target);controls.update();resize();
 }

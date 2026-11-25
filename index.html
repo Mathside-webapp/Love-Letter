@@ -22,10 +22,12 @@
   <link rel="stylesheet" href="assets/css/photo-fix-v5.css?v=curves-spacing-3">
   <link rel="stylesheet" href="assets/css/chapter-layout.css?v=3-compact-balanced">
   <link rel="stylesheet" href="assets/css/scrapbook.css?v=1">
-  <link rel="stylesheet" href="assets/css/terrace.css?v=7-refined">
-  <script type="module" src="assets/js/terrace.js?v=7-refined"></script>
-  <script src="assets/js/config.js" defer></script>
-  <script src="assets/js/app.js" defer></script>
+  <link rel="stylesheet" href="assets/css/terrace.css?v=8">
+  <script src="assets/js/config.js?v=13-bundled-photos" defer></script>
+  <link rel="stylesheet" href="assets/css/photo-editor.css?v=3">
+  <script src="assets/js/photo-editor.js?v=3" defer></script>
+  <script src="assets/js/app.js?v=13-bundled-photos" defer></script>
+  <script src="assets/js/terrace-start.js?v=10-bundled-photos" defer></script>
 </head>
 <body class="intro-locked">
   <a href="#main" class="skip-link">Skip to the love story</a>
@@ -61,6 +63,7 @@
   <main id="main">
     <section class="hero chapter" id="home" aria-labelledby="heroHeading">
       <div id="terrace" class="terrace" aria-label="Interactive moonlit terrace"></div>
+      <div class="terrace-recovery" id="terraceRecovery" hidden><span id="terraceRecoveryText" role="status"></span><button type="button" id="terraceRetry">Try lighter 3D view</button></div>
       <div class="terrace-tools" hidden>
         <p id="terraceStatus" aria-live="polite">A place for just the two of us.</p>
         <nav class="terrace-chapters" aria-label="Explore chapters from the terrace">
@@ -113,12 +116,12 @@
           <!-- Each photo is INSIDE its own real Polaroid frame; frame + image move together. -->
           <div class="real-polaroid-pair">
             <figure class="real-polaroid real-polaroid--one">
-              <div class="real-polaroid-window"><img id="storyCoverPhoto1" src="assets/images/backgrounds/hero-desktop.webp" alt="Our first favorite memory" loading="lazy" decoding="async"></div>
-              <figcaption id="storyCoverCaption1">Our little world ♡</figcaption>
+              <div class="real-polaroid-window"><img id="storyCoverPhoto1" src="assets/images/memories/memories-4-image-ed4a3906-bf52-4f97-b825-404db8a57836.jpeg" alt="Our first favorite memory" loading="lazy" decoding="async"></div>
+              <figcaption id="storyCoverCaption1">A moment I will always remember</figcaption>
             </figure>
             <figure class="real-polaroid real-polaroid--two">
-              <div class="real-polaroid-window"><img id="storyCoverPhoto2" src="assets/images/backgrounds/our-story.webp" alt="Another beautiful memory" loading="lazy" decoding="async"></div>
-              <figcaption id="storyCoverCaption2">Together ♡</figcaption>
+              <div class="real-polaroid-window"><img id="storyCoverPhoto2" src="assets/images/letters/final-1-finalPhoto-83d9d2a9-c0f6-4e24-9eac-f81f9423bf58.jpeg" alt="Another beautiful memory" loading="lazy" decoding="async"></div>
+              <figcaption id="storyCoverCaption2">The beginning of so many adventures</figcaption>
             </figure>
           </div>
           <img class="art-blossoms story-blossoms" src="assets/images/sprites/flower-cluster.webp" alt="" width="409" height="168" loading="lazy">
@@ -197,10 +200,10 @@
         <h2 id="finalHeading" class="image-title title-light"><img src="assets/images/lettering/my-anniversary-letter-light.svg" alt="My Anniversary Letter" width="865" height="145"></h2>
         <p class="final-subtitle">The words I want you to know, today and always.</p>
         <div class="letter-display">
-          <div class="final-paper-art" aria-hidden="true"><img src="assets/images/sprites/letter-card.webp" alt="" width="394" height="361" loading="lazy"><div class="final-paper-preview" aria-label="Preview of your anniversary letter">
+          <div class="final-paper-art" aria-hidden="true"><img src="assets/images/sprites/letter-card.webp" alt="" width="394" height="361" loading="lazy"><div class="final-paper-preview" aria-label="Decorative love note">
              <span class="paper-to" id="paperGreeting">My dearest Babi,</span>
-             <p class="paper-copy" id="paperExcerpt">I have a thousand things I want to say, and every one starts with you.</p>
-             <span class="paper-signature" id="paperSignoff">Forever yours ♡</span>
+             <p class="paper-copy" id="paperExcerpt">Of all the lovely things life has brought me, one of the most beautiful is getting to know you.</p>
+             <span class="paper-signature" id="paperSignoff">Always yours ♡</span>
           </div></div>
           <div class="letter-display-content"><span class="letter-display-kicker" id="letterDisplayKicker">For you, Babi</span><h3>A letter from my heart</h3><p>There are so many things I could say, but I saved the most important ones for the end.</p><button type="button" class="primary-button primary-button-dark" id="openFinalLetter">Open Babi’s letter <span aria-hidden="true">♡</span></button></div>
         </div>

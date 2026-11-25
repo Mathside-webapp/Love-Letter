@@ -1,29 +1,15 @@
 /* To You, With Love — vanilla JavaScript, no framework and no account needed. */
-(() => {
+(async () => {
   "use strict";
   const data = window.LOVE_SITE_DATA;
   if (!data) { console.error("Could not load assets/js/config.js"); return; }
+  const editor = window.LovePhotoEditor;
+  if(editor?.enabled) { await editor.ready; editor.mount(); }
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const SPRITES = "assets/images/sprites/";
-  // Decor photo frames are actual HTML frames. The selected photo and its
-  // border are the SAME animated element, so they can never drift apart.
-  (data.memories || []).slice(0,2).forEach((memory,index)=>{
-    const number=index+1;
-    const img=document.getElementById(`storyCoverPhoto${number}`);
-    const caption=document.getElementById(`storyCoverCaption${number}`);
-    if(!img)return;
-    const rawName=memory?.image;
-    if(typeof rawName==='string' && /^[\w.\- ]+\.(png|jpe?g|webp|avif)$/i.test(rawName)){
-      img.src=`assets/images/memories/${encodeURIComponent(rawName)}`;
-      img.addEventListener('error',()=>{
-        img.src=index===0?'assets/images/backgrounds/hero-desktop.webp':'assets/images/backgrounds/our-story.webp';
-      },{once:true});
-    }
-    img.alt=`A memory with Babi: ${memory.title || 'Our story'}`;
-    if(caption) caption.textContent=memory?.caption?.trim() || memory?.title || 'Us ♡';
-  });
+  // The chapter-cover Polaroids show memory four and the anniversary photo.
   const backgrounds = [
     "assets/images/backgrounds/hero-desktop.webp",
     "assets/images/backgrounds/our-story.webp",
@@ -38,15 +24,16 @@
   function text(node, value) { if (node) node.textContent = value ?? ""; }
   function validImage(name) { return typeof name === "string" && /^[\w.\- ]+\.(png|jpe?g|webp|avif)$/i.test(name) && name !== "."; }
   function validAudio(name) { return typeof name === "string" && /^[\w.\- ]+\.(mp3|m4a|ogg|wav)$/i.test(name); }
-  const photoPath = (name, folder) => validImage(name) ? `assets/images/${folder}/${encodeURIComponent(name)}` : "";
+  const photoPath = (name, folder) => { const path = validImage(name) ? `assets/images/${folder}/${encodeURIComponent(name)}` : ""; return editor?.url(path) || path; };
   const toParagraphs = message => Array.isArray(message) ? message : (message ? [message] : []);
-  function addMedia(body, photo = "", images = [], caption = "", audio = "") {
+  function addMedia(body, photo = "", images = [], caption = "", audio = "", editKey = "", reopen = null) {
     const collection = [photo, ...(Array.isArray(images) ? images : [])].filter(Boolean);
-    if (collection.length) {
+    if (collection.length || (editor?.enabled && editKey)) {
       const figure = document.createElement("figure"); figure.className = "memory-gallery";
-      const img = document.createElement("img"); img.src = collection[0]; img.alt = caption || "One of our favorite memories";
-      img.className = "dialog-photo"; img.addEventListener("error",()=>img.remove(),{once:true});
+      const img = document.createElement("img"); if(collection.length) img.src = collection[0]; else img.hidden=true; img.alt = caption || "One of our favorite memories";
+      img.className = "dialog-photo"; img.addEventListener("error",()=>{img.hidden=true;}); img.addEventListener("load",()=>{img.hidden=false;});
       figure.append(img);
+      if(editor?.enabled && editKey){ figure.append(editor.control(editKey,reopen,collection.length?"Change photo":"Upload photo")); }
       if (caption) figure.append(itemWithText("figcaption",caption,"gallery-caption"));
       if (collection.length > 1) {
         const thumbs = document.createElement("div");thumbs.className="gallery-thumbnails";
@@ -71,12 +58,12 @@
     if (className) el.className = className;
     return el;
   }
-  function showDialog({eyebrow = "A LITTLE NOTE FOR YOU", title = "Just for you", paragraphs = [], photo = "", images = [], caption = "", audio = "", signoff = "With all my love ♡"}) {
+  function showDialog({eyebrow = "A LITTLE NOTE FOR YOU", title = "Just for you", paragraphs = [], photo = "", images = [], caption = "", audio = "", signoff = "With all my love ♡", editKey = "", reopen = null}) {
     text($("#dialogEyebrow"), eyebrow);
     text($("#dialogTitle"), title);
     text($("#dialogSignoff"), signoff);
     dialogBody.replaceChildren();
-    addMedia(dialogBody,photo,images,caption,audio);
+    addMedia(dialogBody,photo,images,caption,audio,editKey,reopen);
     toParagraphs(paragraphs).forEach(line => { if (line) dialogBody.append(itemWithText("p", line)); });
     if (!dialog.open) dialog.showModal();
     dialog.scrollTop=0;
@@ -126,7 +113,7 @@
     $("#heroHeading").focus({preventScroll:true});
     if (!reduceMotion.matches) burstAt(window.innerWidth / 2, window.innerHeight / 2, 12);
   }
-  if (introSeen) {
+  if (introSeen || editor?.enabled) {
     intro.classList.add("hidden");
     intro.setAttribute("aria-hidden", "true");
     pageBody.classList.remove("intro-locked");
@@ -137,13 +124,23 @@
   text($("#heroSubtitle"), data.heroMessage || "A little world I made, just for you.");
   text($("#signatureName"), data.yourName || "Your person");
   text($("#letterDisplayKicker"),`For you, ${data.girlfriendName || "Babi"}`);
-  // The parchment displays a real, editable excerpt — not an empty heart.
-  // Edits made in tools/personalize.html or config.js appear here automatically.
-  const paperLines = toParagraphs(data.finalLetter).filter(Boolean);
-  text($("#paperGreeting"), paperLines[0] || `My dearest ${data.girlfriendName || "Babi"},`);
-  const excerpt = (paperLines[1] || paperLines[0] || `Every day with you is special, ${data.girlfriendName || "Babi"}.`).trim();
-  text($("#paperExcerpt"), excerpt.length > 150 ? excerpt.slice(0, 147).trimEnd() + "…" : excerpt);
-  text($("#paperSignoff"), `Always yours ♡`);
+  // Decorative parchment is fixed in index.html; the final letter is only rendered on demand.
+  function refreshStoryCovers() {
+    const covers = [
+      ["#storyCoverPhoto1", photoPath(data.memories?.[3]?.image, 'memories'), backgrounds[0]],
+      ["#storyCoverPhoto2", photoPath(data.finalPhoto, 'letters'), backgrounds[1]]
+    ];
+    for (const [selector, path, fallback] of covers) {
+      const img = $(selector); if (!img) continue;
+      img.onerror = () => { img.onerror = null; img.src = fallback; };
+      img.src = path || fallback;
+    }
+  }
+  refreshStoryCovers();
+  document.addEventListener('love-photo-changed', e => {
+    if (['memory-3', 'final'].includes(e.detail?.key)) refreshStoryCovers();
+  });
+
 
   $("#heroNote").addEventListener("click", () => showDialog({
     eyebrow: "BEFORE YOU BEGIN", title: `For you, ${data.girlfriendName || "Babi"} ♡`,
@@ -175,8 +172,8 @@
   // use the site's bundled artwork, so the page still looks complete.
   const timeline = $("#timeline");
   (data.memories || []).slice(0,8).forEach((memory, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
+    const button = document.createElement(editor?.enabled ? "article" : "button");
+    if (!editor?.enabled) button.type = "button";
     button.className = "memory-card reveal";
     button.setAttribute("aria-label", `Open memory: ${memory.title}`);
     const photo = document.createElement("div");
@@ -184,25 +181,32 @@
     const img = document.createElement("img");
     img.loading = "lazy";
     img.decoding = "async";
-    const realPhoto = photoPath(memory.image,'memories');
-    img.src = realPhoto || backgrounds[index % backgrounds.length];
-    img.alt = realPhoto ? `Photo of ${memory.title}` : "Dreamy illustration, replace with your own photo";
-    if (realPhoto) img.addEventListener("error", () => { img.src = backgrounds[index % backgrounds.length]; }, {once:true});
-    img.style.objectPosition = ["center", "75% center", "center 55%", "60% center"][index % 4];
-    photo.append(img);
-    if (!realPhoto) photo.append(itemWithText("span", "Your photo here ♡", "photo-empty-tag"));
+    const placeholder=backgrounds[index % backgrounds.length];
+    const tag=itemWithText("span", "Your photo here ♡", "photo-empty-tag");
+    function refreshPhoto(){
+      const realPhoto=photoPath(memory.image,'memories');
+      img.onerror=()=>{img.onerror=null;img.src=placeholder;tag.hidden=false;};
+      img.onload=()=>{tag.hidden=img.src!==new URL(placeholder,location.href).href && !editor?.enabled;};
+      img.src=realPhoto||placeholder;img.alt=`Photo of ${memory.title}`;
+      tag.textContent=editor?.enabled?"Click to upload / replace ♡":"Your photo here ♡";tag.hidden=!!realPhoto&&!editor?.enabled;
+    }
+    img.style.objectPosition = "center";
+    photo.append(img,tag);refreshPhoto();
+    document.addEventListener("love-photo-changed", e=>{if(e.detail.key===`memory-${index}`)refreshPhoto();});
     button.append(photo, itemWithText("span", memory.date || `MEMORY ${index+1}`, "memory-index"), itemWithText("span", memory.title || "A Special Day", "memory-title"));
-    const hint = itemWithText("span", "Read this memory  ↗", "memory-hint");
-    button.append(hint);
-    button.addEventListener("click", () => showDialog({
-      eyebrow: memory.date || `MEMORY ${index+1}`,
-      title: memory.title,
-      paragraphs: toParagraphs(memory.message),
-      photo: realPhoto,
+    const hint = itemWithText("span", "Read this memory  ↗", "memory-hint");button.append(hint);
+    function openMemory(){showDialog({
+      eyebrow: memory.date || `MEMORY ${index+1}`, title: memory.title,
+      paragraphs: toParagraphs(memory.message), photo: photoPath(memory.image,'memories'),
       images: (memory.extraImages||[]).map(name=>photoPath(name,'memories')).filter(Boolean),
-      caption: memory.caption || "",
-      signoff: "A page from our little scrapbook ♡"
-    }));
+      caption: memory.caption || "", signoff: "A page from our little scrapbook ♡", editKey:'memory-'+index,
+      reopen:()=>{refreshPhoto();openMemory();}
+    });}
+    if(editor?.enabled){
+      const input=document.createElement('input');input.type='file';input.accept='image/*,.jpg,.jpeg,.png,.webp,.avif';input.className='memory-photo-native';input.setAttribute('aria-label',`Choose photo for ${memory.title}`);
+      input.addEventListener('click',e=>e.stopPropagation());input.addEventListener('change',()=>{const file=input.files[0];input.value='';if(file)void editor.saveFile('memory-'+index,file,refreshPhoto);});photo.append(input);
+      const read=document.createElement('button');read.type='button';read.className='memory-read-edit';read.textContent='Read this memory ↗';hint.replaceWith(read);read.addEventListener('click',openMemory);
+    }else button.addEventListener('click',openMemory);
     timeline.append(button);
   });
 
@@ -263,17 +267,19 @@
     const extras=[photoPath(letter.image,'letters')?'PHOTO':'',validAudio(letter.audio)?'VOICE NOTE':''].filter(Boolean);
     button.append(itemWithText('span',extras.length?extras.join(' · '):'A LETTER SEALED WITH LOVE','letter-detail'));
     button.append(itemWithText('span','Break the seal ↗','letter-tap'));
-    button.addEventListener('click',()=>{
-      showDialog({eyebrow:letter.stamp||'OPEN WHEN...',title:letter.title,paragraphs:toParagraphs(letter.message),photo:photoPath(letter.image,'letters'),audio:letter.audio||'',signoff:letter.signoff || `Always for you, ${data.yourName || 'your person'} ♡`});
+    function openLetter(){
+      showDialog({eyebrow:letter.stamp||'OPEN WHEN...',title:letter.title,paragraphs:toParagraphs(letter.message),photo:photoPath(letter.image,'letters'),audio:letter.audio||'',signoff:letter.signoff || `Always for you, ${data.yourName || 'your person'} ♡`,editKey:'letter-'+index,reopen:openLetter});
       button.classList.add('has-opened');
-    });
+    }
+    button.addEventListener('click',openLetter);
     lettersGrid.append(button);
   });
 
-  $("#openFinalLetter").addEventListener("click", () => {
-    showDialog({eyebrow:"MY HEART, IN WORDS",title:`Happy anniversary, ${data.girlfriendName || "Babi"}`,paragraphs:data.finalLetter || [],photo:photoPath(data.finalPhoto,'letters'),signoff:`Forever yours, ${data.yourName || "your person"} ♡`});
+  function openFinalLetter(){
+    showDialog({eyebrow:"MY HEART, IN WORDS",title:`Happy anniversary, ${data.girlfriendName || "Babi"}`,paragraphs:data.finalLetter || [],photo:photoPath(data.finalPhoto,'letters'),signoff:`Forever yours, ${data.yourName || "your person"} ♡`,editKey:"final",reopen:openFinalLetter});
     if (!reduceMotion.matches) burstAt(window.innerWidth/2,window.innerHeight/2,22);
-  });
+  }
+  $("#openFinalLetter").addEventListener("click",openFinalLetter);
   $("#replayStory").addEventListener("click", () => {
     if (dialog.open) dialog.close();
     window.scrollTo({top:0,behavior:reduceMotion.matches ? "instant" : "smooth"});

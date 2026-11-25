@@ -1,0 +1,8 @@
+TO BABI, WITH LOVE — personalized website
+
+1. Extract the entire ZIP. On Windows, double-click START-WEBSITE.bat (requires Python 3). Keep the command window open. If needed refresh http://localhost:8765/ after the server starts.
+2. For GitHub Pages, upload the CONTENTS of the Love-Letter-main folder to the existing repository root, preserving all directories. Commit and hard refresh the published page.
+3. Your existing letter and messages are included. Four non-filename memory photo descriptions were moved to captions. The final photo was not supplied; put the original JPEG in assets/images/letters/ with the filename referenced in config.js: final-1-finalPhoto-83d9d2a9-c0f6-4e24-9eac-f81f9423bf58.jpeg
+4. The normal 3D scene remains the default. If WebGL fails, the illustrated fallback explains the issue and offers a lighter mode with lower pixel density and no shadows. The 3D scene still requires a WebGL2-capable browser.
+5. Edit future messages with tools/personalize.html. Use Download Personalized ZIP for new media. Merge the assets folder into the full website; do not replace all website folders with only the export.
+6. Privacy: files on public GitHub Pages may be publicly accessible.
